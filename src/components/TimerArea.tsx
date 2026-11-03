@@ -1,6 +1,13 @@
+import { useCallback, useEffect, useMemo } from 'react'
+import { useSettings } from '../context/SettingsContext'
 import { useTimer } from '../hooks/useTimer'
+import {
+  playAlertSound,
+  showSessionNotification,
+} from '../utils/alerts'
 import { formatTime } from '../utils/formatTime'
-import { LONG_BREAK_INTERVAL, MODE_LABELS } from '../utils/timer'
+import { settingsToDurations } from '../utils/settings'
+import { MODE_LABELS, type Mode } from '../utils/timer'
 import CycleCounter from './CycleCounter'
 import ModeSwitcher from './ModeSwitcher'
 import ProgressRing from './ProgressRing'
@@ -13,8 +20,35 @@ const STATUS_LABELS = {
 } as const
 
 function TimerArea() {
-  const timer = useTimer()
+  const { settings } = useSettings()
+  const durations = useMemo(
+    () => settingsToDurations(settings),
+    [settings.focus, settings.shortBreak, settings.longBreak],
+  )
+
+  const handleSessionEnd = useCallback(
+    (completedMode: Mode) => {
+      playAlertSound(settings.sound, settings.volume)
+      if (settings.notifications) {
+        showSessionNotification(completedMode)
+      }
+    },
+    [settings.sound, settings.volume, settings.notifications],
+  )
+
+  const timer = useTimer({
+    durations,
+    longBreakInterval: settings.longBreakInterval,
+    autoStart: settings.autoStart,
+    onSessionEnd: handleSessionEnd,
+  })
+
   const modeLabel = MODE_LABELS[timer.mode]
+
+  // Drive the mode-based color palette from the current session.
+  useEffect(() => {
+    document.documentElement.dataset.mode = timer.mode
+  }, [timer.mode])
 
   return (
     <section className="timer-area" aria-label="Pomodoro timer">
@@ -43,7 +77,7 @@ function TimerArea() {
 
         <CycleCounter
           count={timer.focusCountInCycle}
-          interval={LONG_BREAK_INTERVAL}
+          interval={settings.longBreakInterval}
         />
       </div>
     </section>

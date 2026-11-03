@@ -1,12 +1,10 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { formatTime } from '../utils/formatTime'
 import {
-  DEFAULT_DURATIONS,
-  LONG_BREAK_INTERVAL,
   MODE_LABELS,
   TIMER_STORAGE_KEY,
+  applyDurations,
   createTimerState,
-  durationMs,
   isTimerState,
   pauseTimer,
   resetTimer,
@@ -15,29 +13,39 @@ import {
   startTimer,
   switchMode,
   tickTimer,
+  type Durations,
   type Mode,
   type TimerState,
 } from '../utils/timer'
 
 const TICK_INTERVAL_MS = 250
 
-function loadTimerState(now: number): TimerState {
+function loadTimerState(
+  now: number,
+  durations: Durations,
+  interval: number,
+): TimerState {
   try {
     const raw = localStorage.getItem(TIMER_STORAGE_KEY)
-    if (!raw) return createTimerState()
+    if (!raw) return createTimerState(durations)
     const parsed: unknown = JSON.parse(raw)
-    if (!isTimerState(parsed)) return createTimerState()
-    return restoreTimer(parsed, now)
+    if (!isTimerState(parsed)) return createTimerState(durations)
+    return restoreTimer(parsed, now, durations, interval)
   } catch {
-    return createTimerState()
+    return createTimerState(durations)
   }
+}
+
+export interface UseTimerOptions {
+  durations: Durations
+  longBreakInterval: number
+  autoStart: boolean
+  onSessionEnd?: (completedMode: Mode) => void
 }
 
 export interface UseTimerResult extends TimerState {
   /** Whole seconds remaining, rounded up so the display starts at full time. */
   remainingSeconds: number
-  /** Total length of the current session in milliseconds. */
-  totalMs: number
   /** Elapsed fraction of the current session, from 0 to 1. */
   progress: number
   start: () => void
@@ -48,9 +56,14 @@ export interface UseTimerResult extends TimerState {
   setMode: (mode: Mode) => void
 }
 
-export function useTimer(): UseTimerResult {
+export function useTimer({
+  durations,
+  longBreakInterval,
+  autoStart,
+  onSessionEnd,
+}: UseTimerOptions): UseTimerResult {
   const [state, setState] = useState<TimerState>(() =>
-    loadTimerState(Date.now()),
+    loadTimerState(Date.now(), durations, longBreakInterval),
   )
 
   // Persist every state change so a refresh or closed tab resumes correctly.
@@ -68,17 +81,53 @@ export function useTimer(): UseTimerResult {
 
     const id = window.setInterval(() => {
       setState((current) =>
-        tickTimer(
-          current,
-          Date.now(),
-          DEFAULT_DURATIONS,
-          LONG_BREAK_INTERVAL,
-        ),
+        tickTimer(current, Date.now(), durations, longBreakInterval),
       )
     }, TICK_INTERVAL_MS)
 
     return () => window.clearInterval(id)
-  }, [state.status])
+  }, [state.status, durations, longBreakInterval])
+
+  // Idle sessions pick up new duration settings immediately.
+  const previousDurationsRef = useRef(durations)
+  useEffect(() => {
+    if (previousDurationsRef.current === durations) return
+    previousDurationsRef.current = durations
+    setState((current) => applyDurations(current, durations))
+  }, [durations])
+
+  // Alert callbacks live in a ref so changing them does not re-run the effect.
+  const onSessionEndRef = useRef(onSessionEnd)
+  useEffect(() => {
+    onSessionEndRef.current = onSessionEnd
+  }, [onSessionEnd])
+
+  // Detect a session that ran to completion (not a manual skip/mode switch).
+  const manualActionRef = useRef(false)
+  const previousSessionRef = useRef({
+    status: state.status,
+    mode: state.mode,
+  })
+  useEffect(() => {
+    const previous = previousSessionRef.current
+    previousSessionRef.current = { status: state.status, mode: state.mode }
+
+    const wasManual = manualActionRef.current
+    manualActionRef.current = false
+
+    const completed =
+      !wasManual &&
+      previous.status === 'running' &&
+      state.status === 'idle' &&
+      previous.mode !== state.mode
+
+    if (!completed) return
+
+    onSessionEndRef.current?.(previous.mode)
+    if (autoStart) {
+      setState((current) => startTimer(current, Date.now()))
+    }
+  }, [state.status, state.mode, autoStart])
 
   const remainingSeconds = Math.max(0, Math.ceil(state.remainingMs / 1000))
 
@@ -108,29 +157,33 @@ export function useTimer(): UseTimerResult {
   }, [])
 
   const reset = useCallback(() => {
-    setState((current) => resetTimer(current, DEFAULT_DURATIONS))
-  }, [])
+    manualActionRef.current = true
+    setState((current) => resetTimer(current, durations))
+  }, [durations])
 
   const skip = useCallback(() => {
+    manualActionRef.current = true
     setState((current) =>
-      skipSession(current, DEFAULT_DURATIONS, LONG_BREAK_INTERVAL),
+      skipSession(current, durations, longBreakInterval),
     )
-  }, [])
+  }, [durations, longBreakInterval])
 
-  const setMode = useCallback((mode: Mode) => {
-    setState((current) => switchMode(current, mode, DEFAULT_DURATIONS))
-  }, [])
+  const setMode = useCallback(
+    (mode: Mode) => {
+      manualActionRef.current = true
+      setState((current) => switchMode(current, mode, durations))
+    },
+    [durations],
+  )
 
-  const totalMs = durationMs(state.mode, DEFAULT_DURATIONS)
   const progress =
-    totalMs > 0
-      ? Math.min(1, Math.max(0, 1 - state.remainingMs / totalMs))
+    state.totalMs > 0
+      ? Math.min(1, Math.max(0, 1 - state.remainingMs / state.totalMs))
       : 0
 
   return {
     ...state,
     remainingSeconds,
-    totalMs,
     progress,
     start,
     pause,

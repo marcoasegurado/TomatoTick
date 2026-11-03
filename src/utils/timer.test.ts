@@ -6,6 +6,7 @@ import {
   computeRemainingMs,
   createTimerState,
   durationMs,
+  applyDurations,
   isTimerState,
   pauseTimer,
   resetTimer,
@@ -37,6 +38,7 @@ describe('timer state helpers', () => {
       status: 'idle',
       endTime: null,
       remainingMs: durationMs('focus'),
+      totalMs: durationMs('focus'),
       focusCountInCycle: 0,
     })
   })
@@ -70,6 +72,17 @@ describe('timer state helpers', () => {
     expect(switched.mode).toBe('longBreak')
     expect(switched.remainingMs).toBe(durationMs('longBreak'))
     expect(switched.focusCountInCycle).toBe(0)
+  })
+
+  it('applies new durations to an idle timer only', () => {
+    const custom = { focus: 10 * 60, shortBreak: 60, longBreak: 120 }
+    const idle = applyDurations(createTimerState(), custom)
+    expect(idle.remainingMs).toBe(durationMs('focus', custom))
+    expect(idle.totalMs).toBe(durationMs('focus', custom))
+
+    const running = startTimer(createTimerState(), NOW)
+    const unchanged = applyDurations(running, custom)
+    expect(unchanged).toBe(running)
   })
 })
 

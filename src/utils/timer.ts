@@ -29,6 +29,8 @@ export interface TimerState {
   endTime: number | null
   /** Remaining time in milliseconds. Authoritative while paused or idle. */
   remainingMs: number
+  /** Full length of the current session in milliseconds. */
+  totalMs: number
   /** Focus sessions completed in the current long-break cycle. */
   focusCountInCycle: number
 }
@@ -43,11 +45,13 @@ export function createTimerState(
   mode: Mode = 'focus',
   focusCountInCycle = 0,
 ): TimerState {
+  const totalMs = durationMs(mode, durations)
   return {
     mode,
     status: 'idle',
     endTime: null,
-    remainingMs: durationMs(mode, durations),
+    remainingMs: totalMs,
+    totalMs,
     focusCountInCycle,
   }
 }
@@ -149,6 +153,20 @@ export function switchMode(
   return createTimerState(durations, mode, state.focusCountInCycle)
 }
 
+/**
+ * Apply new durations immediately to an idle session. Running or paused
+ * sessions keep their current length; new durations apply to the next session.
+ */
+export function applyDurations(
+  state: TimerState,
+  durations: Durations = DEFAULT_DURATIONS,
+): TimerState {
+  if (state.status !== 'idle') return state
+  const totalMs = durationMs(state.mode, durations)
+  if (state.totalMs === totalMs && state.remainingMs === totalMs) return state
+  return { ...state, totalMs, remainingMs: totalMs }
+}
+
 /** Recompute the countdown from the stored end timestamp. */
 export function tickTimer(
   state: TimerState,
@@ -201,6 +219,9 @@ export function isTimerState(value: unknown): value is TimerState {
     typeof candidate.remainingMs === 'number' &&
     Number.isFinite(candidate.remainingMs) &&
     candidate.remainingMs >= 0 &&
+    typeof candidate.totalMs === 'number' &&
+    Number.isFinite(candidate.totalMs) &&
+    candidate.totalMs > 0 &&
     typeof candidate.focusCountInCycle === 'number' &&
     Number.isInteger(candidate.focusCountInCycle) &&
     candidate.focusCountInCycle >= 0

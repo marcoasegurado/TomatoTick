@@ -1,4 +1,8 @@
-function Header() {
+interface HeaderProps {
+  onOpenSettings: () => void
+}
+
+function Header({ onOpenSettings }: HeaderProps) {
   return (
     <header className="header">
       <div className="header__brand">
@@ -12,6 +16,14 @@ function Header() {
           </p>
         </div>
       </div>
+
+      <button
+        type="button"
+        className="header__action"
+        onClick={onOpenSettings}
+      >
+        <span aria-hidden="true">⚙</span> Settings
+      </button>
     </header>
   )
 }
