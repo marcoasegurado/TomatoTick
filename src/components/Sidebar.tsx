@@ -1,9 +1,153 @@
-function Sidebar() {
+import { useState, type FormEvent } from 'react'
+import { useTasks } from '../context/TasksContext'
+import { MAX_TASK_TITLE_LENGTH } from '../utils/tasks'
+
+interface SidebarProps {
+  open: boolean
+  onClose: () => void
+}
+
+function Sidebar({ open, onClose }: SidebarProps) {
+  const {
+    tasks,
+    activeTaskId,
+    addTask,
+    toggleTask,
+    deleteTask,
+    setActiveTask,
+  } = useTasks()
+  const [title, setTitle] = useState('')
+
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault()
+    if (!title.trim()) return
+    addTask(title)
+    setTitle('')
+  }
+
   return (
-    <aside className="sidebar" aria-label="Tasks">
-      <h2 className="sidebar__title">Tasks</h2>
-      <p className="sidebar__empty">Your task list will live here.</p>
-    </aside>
+    <>
+      <div
+        className={
+          open ? 'sidebar-backdrop sidebar-backdrop--open' : 'sidebar-backdrop'
+        }
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <aside
+        className={open ? 'sidebar sidebar--open' : 'sidebar'}
+        aria-label="Tasks"
+      >
+        <div className="sidebar__header">
+          <h2 className="sidebar__title">Tasks</h2>
+          <button
+            type="button"
+            className="sidebar__close"
+            aria-label="Close tasks"
+            onClick={onClose}
+          >
+            ×
+          </button>
+        </div>
+
+        <form className="task-form" onSubmit={handleSubmit}>
+          <input
+            type="text"
+            className="task-form__input"
+            aria-label="New task"
+            placeholder="Add a task…"
+            maxLength={MAX_TASK_TITLE_LENGTH}
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+          />
+          <button
+            type="submit"
+            className="button button--primary button--small"
+            disabled={!title.trim()}
+          >
+            Add
+          </button>
+        </form>
+
+        {tasks.length === 0 ? (
+          <p className="sidebar__empty">
+            No tasks yet. Add one above to focus on it.
+          </p>
+        ) : (
+          <ul className="task-list">
+            {tasks.map((task) => {
+              const isActive = task.id === activeTaskId
+              return (
+                <li
+                  key={task.id}
+                  className={[
+                    'task-item',
+                    task.completed ? 'task-item--completed' : '',
+                    isActive ? 'task-item--active' : '',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
+                >
+                  <input
+                    type="checkbox"
+                    className="task-item__checkbox"
+                    checked={task.completed}
+                    onChange={() => toggleTask(task.id)}
+                    aria-label={`Mark "${task.title}" as ${
+                      task.completed ? 'incomplete' : 'complete'
+                    }`}
+                  />
+
+                  <div className="task-item__body">
+                    <span className="task-item__title">{task.title}</span>
+                    {task.focusSessions > 0 && (
+                      <span className="task-item__meta">
+                        {task.focusSessions}{' '}
+                        {task.focusSessions === 1 ? 'session' : 'sessions'} ·{' '}
+                        {task.focusMinutes} min
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="task-item__actions">
+                    <button
+                      type="button"
+                      className={
+                        isActive
+                          ? 'task-item__action task-item__action--active'
+                          : 'task-item__action'
+                      }
+                      aria-pressed={isActive}
+                      aria-label={
+                        isActive
+                          ? `Clear focus for "${task.title}"`
+                          : `Focus on "${task.title}"`
+                      }
+                      title={isActive ? 'Clear current focus' : 'Set as focus'}
+                      disabled={task.completed}
+                      onClick={() =>
+                        setActiveTask(isActive ? null : task.id)
+                      }
+                    >
+                      <span aria-hidden="true">◎</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="task-item__action task-item__action--danger"
+                      aria-label={`Delete "${task.title}"`}
+                      title="Delete task"
+                      onClick={() => deleteTask(task.id)}
+                    >
+                      <span aria-hidden="true">✕</span>
+                    </button>
+                  </div>
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </aside>
+    </>
   )
 }
 

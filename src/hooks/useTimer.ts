@@ -40,7 +40,7 @@ export interface UseTimerOptions {
   durations: Durations
   longBreakInterval: number
   autoStart: boolean
-  onSessionEnd?: (completedMode: Mode) => void
+  onSessionEnd?: (completedMode: Mode, completedTotalMs: number) => void
 }
 
 export interface UseTimerResult extends TimerState {
@@ -107,10 +107,15 @@ export function useTimer({
   const previousSessionRef = useRef({
     status: state.status,
     mode: state.mode,
+    totalMs: state.totalMs,
   })
   useEffect(() => {
     const previous = previousSessionRef.current
-    previousSessionRef.current = { status: state.status, mode: state.mode }
+    previousSessionRef.current = {
+      status: state.status,
+      mode: state.mode,
+      totalMs: state.totalMs,
+    }
 
     const wasManual = manualActionRef.current
     manualActionRef.current = false
@@ -123,11 +128,11 @@ export function useTimer({
 
     if (!completed) return
 
-    onSessionEndRef.current?.(previous.mode)
+    onSessionEndRef.current?.(previous.mode, previous.totalMs)
     if (autoStart) {
       setState((current) => startTimer(current, Date.now()))
     }
-  }, [state.status, state.mode, autoStart])
+  }, [state.status, state.mode, state.totalMs, autoStart])
 
   const remainingSeconds = Math.max(0, Math.ceil(state.remainingMs / 1000))
 

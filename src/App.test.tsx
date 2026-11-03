@@ -2,13 +2,17 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it } from 'vitest'
 import App from './App'
 import { SettingsProvider } from './context/SettingsContext'
+import { TasksProvider } from './context/TasksContext'
 import { SETTINGS_STORAGE_KEY } from './utils/settings'
+import { TASKS_STORAGE_KEY } from './utils/tasks'
 import { TIMER_STORAGE_KEY } from './utils/timer'
 
 function renderApp() {
   return render(
     <SettingsProvider>
-      <App />
+      <TasksProvider>
+        <App />
+      </TasksProvider>
     </SettingsProvider>,
   )
 }
@@ -60,5 +64,23 @@ describe('App shell', () => {
     )
     expect(saved.focus).toBe(30)
     expect(localStorage.getItem(TIMER_STORAGE_KEY)).not.toBeNull()
+  })
+
+  it('adds a task and makes it the current focus', () => {
+    renderApp()
+
+    fireEvent.change(screen.getByLabelText('New task'), {
+      target: { value: 'Write tests' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    expect(screen.getAllByText('Write tests').length).toBeGreaterThan(0)
+    expect(screen.getByText(/focusing on/i)).toBeInTheDocument()
+
+    const saved = JSON.parse(
+      localStorage.getItem(TASKS_STORAGE_KEY) ?? '{}',
+    )
+    expect(saved.activeTaskId).toBeTruthy()
+    expect(saved.tasks[0].title).toBe('Write tests')
   })
 })

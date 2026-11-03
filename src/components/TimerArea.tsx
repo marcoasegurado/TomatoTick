@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react'
 import { useSettings } from '../context/SettingsContext'
+import { useTasks } from '../context/TasksContext'
 import { useTimer } from '../hooks/useTimer'
 import {
   playAlertSound,
@@ -8,6 +9,7 @@ import {
 import { formatTime } from '../utils/formatTime'
 import { settingsToDurations } from '../utils/settings'
 import { MODE_LABELS, type Mode } from '../utils/timer'
+import CurrentTask from './CurrentTask'
 import CycleCounter from './CycleCounter'
 import ModeSwitcher from './ModeSwitcher'
 import ProgressRing from './ProgressRing'
@@ -21,19 +23,28 @@ const STATUS_LABELS = {
 
 function TimerArea() {
   const { settings } = useSettings()
+  const { creditFocusSession } = useTasks()
   const durations = useMemo(
     () => settingsToDurations(settings),
     [settings.focus, settings.shortBreak, settings.longBreak],
   )
 
   const handleSessionEnd = useCallback(
-    (completedMode: Mode) => {
+    (completedMode: Mode, completedTotalMs: number) => {
+      if (completedMode === 'focus') {
+        creditFocusSession(completedTotalMs / 60_000)
+      }
       playAlertSound(settings.sound, settings.volume)
       if (settings.notifications) {
         showSessionNotification(completedMode)
       }
     },
-    [settings.sound, settings.volume, settings.notifications],
+    [
+      settings.sound,
+      settings.volume,
+      settings.notifications,
+      creditFocusSession,
+    ],
   )
 
   const timer = useTimer({
@@ -67,6 +78,8 @@ function TimerArea() {
             {STATUS_LABELS[timer.status]}
           </p>
         </ProgressRing>
+
+        <CurrentTask />
 
         <TimerControls
           status={timer.status}
