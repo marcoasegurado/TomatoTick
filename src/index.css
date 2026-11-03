@@ -143,7 +143,7 @@ button {
   min-width: 0;
 }
 
-/* Timer placeholder */
+/* Timer */
 .timer-area {
   display: flex;
   flex: 1;
@@ -155,9 +155,9 @@ button {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
-  width: min(100%, 440px);
-  padding: clamp(32px, 7vw, 56px);
+  gap: clamp(18px, 3vw, 26px);
+  width: min(100%, 500px);
+  padding: clamp(24px, 5vw, 40px);
   text-align: center;
   background-color: var(--surface);
   border-radius: var(--radius-lg);
@@ -167,24 +167,178 @@ button {
     box-shadow var(--transition);
 }
 
+.mode-switcher {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  padding: 5px;
+  background-color: var(--surface-muted);
+  border-radius: 999px;
+}
+
+.mode-switcher__button {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    box-shadow var(--transition);
+}
+
+.mode-switcher__button:hover {
+  color: var(--text);
+}
+
+.mode-switcher__button[aria-pressed='true'] {
+  color: #ffffff;
+  background-color: var(--mode-color);
+  box-shadow: var(--shadow-sm);
+}
+
+.timer-display {
+  position: relative;
+  width: min(100%, 330px);
+  aspect-ratio: 1;
+}
+
+.progress-ring {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.progress-ring__track {
+  stroke: var(--surface-muted);
+}
+
+.progress-ring__value {
+  stroke: var(--mode-color);
+  transition:
+    stroke-dashoffset 250ms linear,
+    stroke var(--transition);
+}
+
+.timer-display__content {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
 .timer-card__mode {
   font-size: 0.85rem;
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--mode-color);
+  transition: color var(--transition);
 }
 
 .timer-card__time {
-  font-size: clamp(3.5rem, 12vw, 5.5rem);
+  font-size: clamp(3rem, 11vw, 4.5rem);
   font-weight: 800;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   color: var(--text);
 }
 
-.timer-card__hint {
-  font-size: 0.9rem;
+.timer-card__status {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.timer-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.button {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 22px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  border-radius: 999px;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    box-shadow var(--transition),
+    transform 120ms ease;
+}
+
+.button:active {
+  transform: scale(0.97);
+}
+
+.button--primary {
+  color: #ffffff;
+  background-color: var(--mode-color);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--mode-color) 40%, transparent);
+}
+
+.button--primary:hover {
+  background-color: var(--mode-color-dark);
+}
+
+.button--ghost {
+  color: var(--text);
+  background-color: var(--surface-muted);
+}
+
+.button--ghost:hover {
+  background-color: var(--border);
+}
+
+.cycle-counter {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.cycle-counter__dots {
+  display: flex;
+  gap: 8px;
+}
+
+.cycle-counter__dot {
+  width: 11px;
+  height: 11px;
+  background-color: transparent;
+  border: 2px solid var(--border);
+  border-radius: 50%;
+  transition:
+    background-color var(--transition),
+    border-color var(--transition);
+}
+
+.cycle-counter__dot--filled {
+  background-color: var(--mode-color);
+  border-color: var(--mode-color);
+}
+
+.cycle-counter__label {
+  font-size: 0.85rem;
   color: var(--text-muted);
 }
 
