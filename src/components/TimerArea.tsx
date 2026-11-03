@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { useSessions } from '../context/SessionsContext'
 import { useSettings } from '../context/SettingsContext'
 import { useTasks } from '../context/TasksContext'
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts'
 import { useTimer } from '../hooks/useTimer'
 import {
   playAlertSound,
@@ -67,6 +68,19 @@ function TimerArea() {
 
   const modeLabel = MODE_LABELS[timer.mode]
 
+  useKeyboardShortcuts({
+    onToggle: timer.toggle,
+    onReset: timer.reset,
+    onSkip: timer.skip,
+  })
+
+  const liveMessage =
+    timer.status === 'running'
+      ? `${modeLabel} timer running`
+      : timer.status === 'paused'
+        ? `${modeLabel} timer paused`
+        : `${modeLabel} session ready`
+
   // Drive the mode-based color palette from the current session.
   useEffect(() => {
     document.documentElement.dataset.mode = timer.mode
@@ -74,6 +88,9 @@ function TimerArea() {
 
   return (
     <section className="timer-area" aria-label="Pomodoro timer">
+      <p className="sr-only" role="status" aria-live="polite">
+        {liveMessage}
+      </p>
       <div className="timer-card">
         <ModeSwitcher mode={timer.mode} onChange={timer.setMode} />
 

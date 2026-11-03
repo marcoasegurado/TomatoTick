@@ -154,6 +154,33 @@ function SettingsModal({ onClose }: SettingsModalProps) {
           </fieldset>
 
           <fieldset className="settings-group">
+            <legend className="settings-group__legend">Keyboard shortcuts</legend>
+            <dl className="shortcuts">
+              <div className="shortcuts__row">
+                <dt>
+                  <kbd>Space</kbd>
+                </dt>
+                <dd>Start or pause the timer</dd>
+              </div>
+              <div className="shortcuts__row">
+                <dt>
+                  <kbd>R</kbd>
+                </dt>
+                <dd>Reset the current session</dd>
+              </div>
+              <div className="shortcuts__row">
+                <dt>
+                  <kbd>S</kbd>
+                </dt>
+                <dd>Skip to the next session</dd>
+              </div>
+            </dl>
+            <p className="settings-hint">
+              Shortcuts are ignored while typing or when a dialog is open.
+            </p>
+          </fieldset>
+
+          <fieldset className="settings-group">
             <legend className="settings-group__legend">Alerts</legend>
 
             <div className="settings-row">

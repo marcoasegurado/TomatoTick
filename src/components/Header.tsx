@@ -24,22 +24,28 @@ function Header({ onOpenSettings, onOpenTasks, onOpenStats }: HeaderProps) {
           type="button"
           className="header__action header__tasks"
           onClick={onOpenTasks}
+          aria-label="Open tasks"
         >
-          <span aria-hidden="true">☰</span> Tasks
+          <span aria-hidden="true">☰</span>{' '}
+          <span className="header__action-label">Tasks</span>
         </button>
         <button
           type="button"
           className="header__action"
           onClick={onOpenStats}
+          aria-label="Open stats"
         >
-          <span aria-hidden="true">📊</span> Stats
+          <span aria-hidden="true">📊</span>{' '}
+          <span className="header__action-label">Stats</span>
         </button>
         <button
           type="button"
           className="header__action"
           onClick={onOpenSettings}
+          aria-label="Open settings"
         >
-          <span aria-hidden="true">⚙</span> Settings
+          <span aria-hidden="true">⚙</span>{' '}
+          <span className="header__action-label">Settings</span>
         </button>
       </div>
     </header>

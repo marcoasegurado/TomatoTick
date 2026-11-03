@@ -92,6 +92,28 @@ describe('App shell', () => {
     expect(saved.tasks[0].title).toBe('Write tests')
   })
 
+  it('starts and pauses with the Space shortcut, ignoring inputs', () => {
+    renderApp()
+
+    fireEvent.keyDown(window, { code: 'Space', key: ' ' })
+    expect(
+      screen.getByRole('button', { name: 'Pause timer' }),
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Pause timer' }))
+    expect(
+      screen.getByRole('button', { name: 'Start timer' }),
+    ).toBeInTheDocument()
+
+    fireEvent.keyDown(screen.getByLabelText('New task'), {
+      code: 'Space',
+      key: ' ',
+    })
+    expect(
+      screen.getByRole('button', { name: 'Start timer' }),
+    ).toBeInTheDocument()
+  })
+
   it('opens stats with an empty state when there are no sessions', () => {
     renderApp()
 

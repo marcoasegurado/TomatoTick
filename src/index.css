@@ -65,7 +65,31 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--bg);
+  background-image:
+    radial-gradient(
+      circle at 12% 8%,
+      color-mix(in srgb, var(--mode-color) 12%, transparent),
+      transparent 42%
+    ),
+    radial-gradient(
+      circle at 88% 92%,
+      color-mix(in srgb, var(--mode-color) 10%, transparent),
+      transparent 45%
+    );
+  background-attachment: fixed;
   transition: background-color var(--transition);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 h1,
@@ -231,7 +255,7 @@ button {
 
 .mode-switcher__button[aria-pressed='true'] {
   color: #ffffff;
-  background-color: var(--mode-color);
+  background-color: var(--mode-color-dark);
   box-shadow: var(--shadow-sm);
 }
 
@@ -273,7 +297,7 @@ button {
   font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--mode-color);
+  color: var(--mode-color-dark);
   transition: color var(--transition);
 }
 
@@ -334,12 +358,12 @@ button {
 
 .button--primary {
   color: #ffffff;
-  background-color: var(--mode-color);
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--mode-color) 40%, transparent);
+  background-color: var(--mode-color-dark);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--mode-color) 35%, transparent);
 }
 
 .button--primary:hover {
-  background-color: var(--mode-color-dark);
+  background-color: color-mix(in srgb, var(--mode-color-dark) 85%, #000000);
 }
 
 .button--ghost {
@@ -594,7 +618,7 @@ button {
 }
 
 .current-task__text strong {
-  color: var(--mode-color);
+  color: var(--mode-color-dark);
 }
 
 .current-task__text--empty {
@@ -870,6 +894,53 @@ button {
   color: var(--text-muted);
 }
 
+.settings-hint {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.shortcuts {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+}
+
+.shortcuts__row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.88rem;
+}
+
+.shortcuts__row dt {
+  flex-shrink: 0;
+}
+
+.shortcuts__row dd {
+  margin: 0;
+  text-align: right;
+  color: var(--text-muted);
+}
+
+kbd {
+  display: inline-block;
+  min-width: 32px;
+  padding: 3px 8px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-align: center;
+  color: var(--text);
+  background-color: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 7px;
+}
+
 .button--small {
   padding: 9px 16px;
   font-size: 0.85rem;
@@ -1133,5 +1204,144 @@ button {
 @media (max-width: 620px) {
   .stats-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    gap: 12px;
+  }
+
+  .header__brand {
+    gap: 10px;
+  }
+
+  .header__logo {
+    width: 44px;
+    height: 44px;
+    font-size: 25px;
+  }
+}
+
+@media (max-width: 560px) {
+  .header {
+    gap: 10px;
+    padding: 16px 20px;
+  }
+
+  .header__brand {
+    min-width: 0;
+  }
+
+  .header__logo {
+    width: 40px;
+    height: 40px;
+    font-size: 23px;
+    border-radius: 12px;
+  }
+
+  .header__title {
+    font-size: 1.25rem;
+  }
+
+  .header__tagline {
+    display: none;
+  }
+
+  .header__actions {
+    gap: 6px;
+  }
+
+  .header__action {
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    padding: 10px;
+  }
+
+  .header__action-label {
+    display: none;
+  }
+
+  .mode-switcher__button {
+    padding: 9px 6px;
+    font-size: 0.78rem;
+  }
+
+  .button {
+    padding: 11px 16px;
+    font-size: 0.9rem;
+  }
+
+  .timer-card {
+    gap: 16px;
+    padding: 20px 16px;
+  }
+
+  .timer-card__time {
+    font-size: clamp(2.7rem, 15vw, 4rem);
+  }
+
+  .current-task {
+    padding: 7px 12px;
+    font-size: 0.82rem;
+  }
+
+  .stats-streaks {
+    grid-template-columns: 1fr;
+  }
+
+  .modal__header {
+    padding: 16px 18px;
+  }
+
+  .settings-form,
+  .stats {
+    padding: 18px;
+  }
+
+  .shortcuts__row {
+    flex-direction: column;
+    gap: 2px;
+    align-items: flex-start;
+  }
+
+  .shortcuts__row dd {
+    text-align: left;
+  }
+}
+
+@media (max-width: 420px) {
+  .header {
+    padding: 14px 16px;
+  }
+
+  .app__body {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .header__title {
+    font-size: 1.15rem;
+  }
+
+  .mode-switcher__button {
+    font-size: 0.72rem;
+    letter-spacing: -0.01em;
+  }
+
+  .cycle-counter__label {
+    font-size: 0.78rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
