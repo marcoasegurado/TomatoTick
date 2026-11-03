@@ -21,7 +21,8 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 - React + Vite
 - localStorage for all persistence (no backend)
 - Vitest for unit tests
-- GitHub Pages deployment via GitHub Actions
+- Cloudflare Pages deployment (connected to the GitHub repo, auto-deploys on push to `main`)
+- GitHub Actions for CI (tests and build checks)
 - A lightweight chart library (e.g. Recharts) for stats
 
 ## Final feature list
@@ -36,7 +37,7 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 | Look | Playful tomato theme, rounded shapes, color changes per mode (focus, short break, long break). |
 | Layout | Timer is the main view. Task list in a sidebar (drawer on mobile). Stats and settings open as modals. Fully responsive. |
 | Extras | Keyboard shortcuts (e.g. `Space` start/pause, `R` reset, `S` skip). |
-| Repo | Polished README, GitHub Pages demo, Vitest tests, CI on every push. |
+| Repo | Polished README, Cloudflare Pages demo, Vitest tests, CI on every push. |
 
 ---
 
@@ -48,7 +49,7 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 - [ ] Set up a folder structure (`components/`, `hooks/`, `utils/`, `context/` or `store/`, `assets/`).
 - [ ] Add global styles and CSS variables for the three mode colors (focus, short break, long break).
 - [ ] Add Vitest and a sample passing test.
-- [ ] Add a `.gitignore`, and set the Vite `base` option so it works on GitHub Pages.
+- [ ] Add a `.gitignore`. Keep the Vite `base` option at `/` (the default), since Cloudflare Pages serves the site from the root.
 - [ ] Create a basic app shell: header, main timer area, empty sidebar.
 
 **Done when:** `npm run dev`, `npm run build`, and `npm test` all work.
@@ -144,10 +145,15 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 - [ ] Review and fill gaps in unit tests (timer, settings, tasks, stats).
 - [ ] Add a GitHub Actions workflow that runs install, lint (if configured), tests, and build on every push and pull request.
-- [ ] Add a GitHub Actions workflow that deploys to GitHub Pages on pushes to `main`.
-- [ ] Confirm the deployed site works (assets load, routing and base path are correct).
+- [ ] Prepare the project for Cloudflare Pages. Do not add a GitHub Pages workflow. The deployment itself is set up by the owner in the Cloudflare dashboard (Workers & Pages, create a Pages project, connect the GitHub repo) with these build settings:
+  - Framework preset: Vite (or build command `npm run build`)
+  - Build output directory: `dist`
+  - Production branch: `main`
+- [ ] Make sure `npm run build` succeeds from a clean install and produces a working `dist/` folder.
+- [ ] Add a short "Deploying to Cloudflare Pages" section to the README with the settings above.
+- [ ] After the owner deploys, confirm the live site works (assets load, timer runs, localStorage persists, no console errors).
 
-**Done when:** A push to `main` runs CI, passes, and publishes the live demo.
+**Done when:** CI passes on every push, a clean build works, and a push to `main` publishes the live demo on Cloudflare Pages.
 
 ---
 
