@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react'
+import { useSessions } from '../context/SessionsContext'
 import { useSettings } from '../context/SettingsContext'
 import { useTasks } from '../context/TasksContext'
 import { useTimer } from '../hooks/useTimer'
@@ -23,7 +24,8 @@ const STATUS_LABELS = {
 
 function TimerArea() {
   const { settings } = useSettings()
-  const { creditFocusSession } = useTasks()
+  const { activeTask, activeTaskId, creditFocusSession } = useTasks()
+  const { recordFocusSession } = useSessions()
   const durations = useMemo(
     () => settingsToDurations(settings),
     [settings.focus, settings.shortBreak, settings.longBreak],
@@ -32,6 +34,12 @@ function TimerArea() {
   const handleSessionEnd = useCallback(
     (completedMode: Mode, completedTotalMs: number) => {
       if (completedMode === 'focus') {
+        recordFocusSession({
+          completedAt: Date.now(),
+          durationMs: completedTotalMs,
+          taskId: activeTaskId,
+          taskTitle: activeTask?.title ?? null,
+        })
         creditFocusSession(completedTotalMs / 60_000)
       }
       playAlertSound(settings.sound, settings.volume)
@@ -44,6 +52,9 @@ function TimerArea() {
       settings.volume,
       settings.notifications,
       creditFocusSession,
+      recordFocusSession,
+      activeTaskId,
+      activeTask,
     ],
   )
 

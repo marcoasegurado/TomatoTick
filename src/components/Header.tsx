@@ -1,9 +1,10 @@
 interface HeaderProps {
   onOpenSettings: () => void
   onOpenTasks: () => void
+  onOpenStats: () => void
 }
 
-function Header({ onOpenSettings, onOpenTasks }: HeaderProps) {
+function Header({ onOpenSettings, onOpenTasks, onOpenStats }: HeaderProps) {
   return (
     <header className="header">
       <div className="header__brand">
@@ -25,6 +26,13 @@ function Header({ onOpenSettings, onOpenTasks }: HeaderProps) {
           onClick={onOpenTasks}
         >
           <span aria-hidden="true">☰</span> Tasks
+        </button>
+        <button
+          type="button"
+          className="header__action"
+          onClick={onOpenStats}
+        >
+          <span aria-hidden="true">📊</span> Stats
         </button>
         <button
           type="button"

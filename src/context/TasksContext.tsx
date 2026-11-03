@@ -19,6 +19,7 @@ import {
   type Task,
   type TaskState,
 } from '../utils/tasks'
+import { createId } from '../utils/id'
 
 interface TasksContextValue extends TaskState {
   activeTask: Task | null
@@ -30,13 +31,6 @@ interface TasksContextValue extends TaskState {
 }
 
 const TasksContext = createContext<TasksContextValue | undefined>(undefined)
-
-function createId(): string {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-    return crypto.randomUUID()
-  }
-  return `task-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
-}
 
 function loadTasks(): TaskState {
   try {
@@ -58,7 +52,9 @@ export function TasksProvider({ children }: { children: ReactNode }) {
   }, [state])
 
   const addTask = useCallback((title: string) => {
-    setState((current) => addTaskToState(current, title, Date.now(), createId()))
+    setState((current) =>
+      addTaskToState(current, title, Date.now(), createId('task')),
+    )
   }, [])
 
   const toggleTask = useCallback((id: string) => {
