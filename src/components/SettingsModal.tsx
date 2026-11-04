@@ -4,6 +4,7 @@ import {
   type ChangeEvent,
   type FormEvent,
 } from 'react'
+import { X } from 'lucide-react'
 import { useSessions } from '../context/SessionsContext'
 import { useSettings } from '../context/SettingsContext'
 import { useTasks } from '../context/TasksContext'
@@ -28,7 +29,14 @@ import {
   type AlertSound,
   type Settings,
   type SettingsErrors,
+  type SettingsField,
 } from '../utils/settings'
+import {
+  applyTheme,
+  persistTheme,
+  resolveTheme,
+  type Theme,
+} from '../utils/theme'
 
 interface SettingsModalProps {
   onClose: () => void
@@ -50,6 +58,7 @@ function SettingsModal({ onClose }: SettingsModalProps) {
   const { sessions, replaceSessions } = useSessions()
   const [draft, setDraft] = useState<Settings>(settings)
   const [errors, setErrors] = useState<SettingsErrors>({})
+  const [theme, setTheme] = useState<Theme>(() => resolveTheme())
   const [permission, setPermission] = useState<NotificationSupport>(() =>
     getNotificationSupport(),
   )
@@ -69,6 +78,26 @@ function SettingsModal({ onClose }: SettingsModalProps) {
     value: Settings[Key],
   ) => {
     setDraft((current) => ({ ...current, [key]: value }))
+  }
+
+  const validateField = (field: SettingsField) => {
+    const nextErrors = validateSettings(draft)
+    setErrors((current) => {
+      const next: SettingsErrors = { ...current }
+      if (nextErrors[field]) {
+        next[field] = nextErrors[field]
+      } else {
+        delete next[field]
+      }
+      return next
+    })
+  }
+
+  const handleTheme = (dark: boolean) => {
+    const next: Theme = dark ? 'dark' : 'light'
+    setTheme(next)
+    applyTheme(next)
+    persistTheme(next)
   }
 
   const handleNotifications = (enabled: boolean) => {
@@ -171,7 +200,6 @@ function SettingsModal({ onClose }: SettingsModalProps) {
     })
   }
 
-
   const notificationNote = (() => {
     if (permission === 'unsupported') {
       return 'This browser does not support notifications.'
@@ -209,264 +237,294 @@ function SettingsModal({ onClose }: SettingsModalProps) {
             aria-label="Close settings"
             onClick={onClose}
           >
-            ×
+            <X size={20} aria-hidden="true" />
           </button>
         </div>
 
         <form className="settings-form" onSubmit={handleSubmit} noValidate>
-          <fieldset className="settings-group">
-            <legend className="settings-group__legend">Timer durations</legend>
+          <div className="settings-form__body">
+            <fieldset className="settings-group">
+              <legend className="settings-group__legend">Timer durations</legend>
 
-            <div className="settings-grid">
-              <NumberSetting
-                id="settings-focus"
-                label="Focus (minutes)"
-                value={draft.focus}
-                min={SETTINGS_LIMITS.focus.min}
-                max={SETTINGS_LIMITS.focus.max}
-                error={errors.focus}
-                onChange={(value) => setField('focus', value)}
-              />
-              <NumberSetting
-                id="settings-short-break"
-                label="Short break (minutes)"
-                value={draft.shortBreak}
-                min={SETTINGS_LIMITS.shortBreak.min}
-                max={SETTINGS_LIMITS.shortBreak.max}
-                error={errors.shortBreak}
-                onChange={(value) => setField('shortBreak', value)}
-              />
-              <NumberSetting
-                id="settings-long-break"
-                label="Long break (minutes)"
-                value={draft.longBreak}
-                min={SETTINGS_LIMITS.longBreak.min}
-                max={SETTINGS_LIMITS.longBreak.max}
-                error={errors.longBreak}
-                onChange={(value) => setField('longBreak', value)}
-              />
-              <NumberSetting
-                id="settings-interval"
-                label="Long break after (sessions)"
-                value={draft.longBreakInterval}
-                min={SETTINGS_LIMITS.longBreakInterval.min}
-                max={SETTINGS_LIMITS.longBreakInterval.max}
-                error={errors.longBreakInterval}
-                onChange={(value) => setField('longBreakInterval', value)}
-              />
-            </div>
-          </fieldset>
-
-          <fieldset className="settings-group">
-            <legend className="settings-group__legend">Keyboard shortcuts</legend>
-            <dl className="shortcuts">
-              <div className="shortcuts__row">
-                <dt>
-                  <kbd>Space</kbd>
-                </dt>
-                <dd>Start or pause the timer</dd>
-              </div>
-              <div className="shortcuts__row">
-                <dt>
-                  <kbd>R</kbd>
-                </dt>
-                <dd>Reset the current session</dd>
-              </div>
-              <div className="shortcuts__row">
-                <dt>
-                  <kbd>S</kbd>
-                </dt>
-                <dd>Skip to the next session</dd>
-              </div>
-            </dl>
-            <p className="settings-hint">
-              Shortcuts are ignored while typing or when a dialog is open.
-            </p>
-          </fieldset>
-
-          <fieldset className="settings-group">
-            <legend className="settings-group__legend">Alerts</legend>
-
-            <div className="settings-row">
-              <label htmlFor="settings-sound" className="settings-label">
-                Alert sound
-              </label>
-              <div className="settings-inline">
-                <select
-                  id="settings-sound"
-                  className="settings-select"
-                  value={draft.sound}
-                  onChange={(event) =>
-                    setField('sound', event.target.value as AlertSound)
-                  }
-                >
-                  {SOUND_OPTIONS.map((option) => (
-                    <option key={option.id} value={option.id}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  className="button button--ghost button--small"
-                  onClick={() => playAlertSound(draft.sound, draft.volume)}
-                >
-                  Preview
-                </button>
-              </div>
-            </div>
-
-            <div className="settings-row">
-              <label htmlFor="settings-volume" className="settings-label">
-                Volume
-              </label>
-              <div className="settings-inline settings-inline--stretch">
-                <input
-                  id="settings-volume"
-                  className="settings-range"
-                  type="range"
-                  min={0}
-                  max={100}
-                  step={1}
-                  value={Math.round(draft.volume * 100)}
-                  onChange={(event) =>
-                    setField('volume', Number(event.target.value) / 100)
-                  }
+              <div className="settings-grid">
+                <NumberSetting
+                  id="settings-focus"
+                  label="Focus (minutes)"
+                  value={draft.focus}
+                  min={SETTINGS_LIMITS.focus.min}
+                  max={SETTINGS_LIMITS.focus.max}
+                  error={errors.focus}
+                  onChange={(value) => setField('focus', value)}
+                  onBlur={() => validateField('focus')}
                 />
-                <output className="settings-output">
-                  {Math.round(draft.volume * 100)}%
-                </output>
+                <NumberSetting
+                  id="settings-short-break"
+                  label="Short break (minutes)"
+                  value={draft.shortBreak}
+                  min={SETTINGS_LIMITS.shortBreak.min}
+                  max={SETTINGS_LIMITS.shortBreak.max}
+                  error={errors.shortBreak}
+                  onChange={(value) => setField('shortBreak', value)}
+                  onBlur={() => validateField('shortBreak')}
+                />
+                <NumberSetting
+                  id="settings-long-break"
+                  label="Long break (minutes)"
+                  value={draft.longBreak}
+                  min={SETTINGS_LIMITS.longBreak.min}
+                  max={SETTINGS_LIMITS.longBreak.max}
+                  error={errors.longBreak}
+                  onChange={(value) => setField('longBreak', value)}
+                  onBlur={() => validateField('longBreak')}
+                />
+                <NumberSetting
+                  id="settings-interval"
+                  label="Long break after (sessions)"
+                  value={draft.longBreakInterval}
+                  min={SETTINGS_LIMITS.longBreakInterval.min}
+                  max={SETTINGS_LIMITS.longBreakInterval.max}
+                  error={errors.longBreakInterval}
+                  onChange={(value) => setField('longBreakInterval', value)}
+                  onBlur={() => validateField('longBreakInterval')}
+                />
               </div>
-            </div>
-            {errors.volume && (
-              <p className="settings-error">{errors.volume}</p>
-            )}
+            </fieldset>
 
-            <label className="settings-check">
-              <input
-                type="checkbox"
-                checked={draft.autoStart}
-                onChange={(event) =>
-                  setField('autoStart', event.target.checked)
-                }
-              />
-              <span>
-                Auto-start the next session
-                <span className="settings-check__hint">
-                  Begin breaks and focus sessions automatically.
-                </span>
-              </span>
-            </label>
+            <fieldset className="settings-group">
+              <legend className="settings-group__legend">
+                Keyboard shortcuts
+              </legend>
+              <div className="shortcuts">
+                <div className="shortcuts__row">
+                  <kbd>Space</kbd>
+                  <span>Start or pause the timer</span>
+                </div>
+                <div className="shortcuts__row">
+                  <kbd>R</kbd>
+                  <span>Reset the current session</span>
+                </div>
+                <div className="shortcuts__row">
+                  <kbd>S</kbd>
+                  <span>Skip to the next session</span>
+                </div>
+              </div>
+              <p className="settings-hint">
+                Shortcuts are ignored while typing or when a dialog is open.
+              </p>
+            </fieldset>
 
-            <label className="settings-check">
-              <input
-                type="checkbox"
-                checked={draft.notifications}
-                disabled={permission === 'unsupported'}
-                onChange={(event) =>
-                  handleNotifications(event.target.checked)
-                }
-              />
-              <span>
-                Browser notifications
-                <span className="settings-check__hint">
-                  {notificationNote}
-                </span>
-              </span>
-            </label>
-          </fieldset>
+            <fieldset className="settings-group">
+              <legend className="settings-group__legend">Alerts</legend>
 
-          <fieldset className="settings-group">
-            <legend className="settings-group__legend">Data</legend>
-            <p className="settings-hint">
-              Back up your settings, tasks, and session history, or restore a
-              previous backup.
-            </p>
-
-            <div className="settings-data-actions">
-              <button
-                type="button"
-                className="button button--ghost button--small"
-                onClick={handleExport}
-              >
-                Export data
-              </button>
-              <button
-                type="button"
-                className="button button--ghost button--small"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                Import data
-              </button>
-              <input
-                ref={fileInputRef}
-                className="sr-only"
-                type="file"
-                accept=".json,application/json"
-                aria-label="Choose backup file"
-                tabIndex={-1}
-                onChange={handleFileChange}
-              />
-            </div>
-
-            {pendingImport && (
-              <div className="settings-import">
-                <p>
-                  Replace current data with the backup from{' '}
-                  {new Date(
-                    pendingImport.backup.exportedAt,
-                  ).toLocaleDateString(undefined, {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                  ? {pendingImport.backup.data.tasks.tasks.length}{' '}
-                  {pendingImport.backup.data.tasks.tasks.length === 1
-                    ? 'task'
-                    : 'tasks'}{' '}
-                  · {pendingImport.backup.data.sessions.length}{' '}
-                  {pendingImport.backup.data.sessions.length === 1
-                    ? 'session'
-                    : 'sessions'}
-                  .
-                </p>
-                {pendingImport.warnings.length > 0 && (
-                  <p className="settings-warning">
-                    {pendingImport.warnings.join(' ')}
-                  </p>
-                )}
-                <div className="settings-data-actions">
+              <div className="settings-row">
+                <label htmlFor="settings-sound" className="settings-label">
+                  Alert sound
+                </label>
+                <div className="settings-inline">
+                  <select
+                    id="settings-sound"
+                    className="settings-select"
+                    value={draft.sound}
+                    onChange={(event) =>
+                      setField('sound', event.target.value as AlertSound)
+                    }
+                  >
+                    {SOUND_OPTIONS.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                   <button
                     type="button"
                     className="button button--ghost button--small"
-                    onClick={() => setPendingImport(null)}
+                    onClick={() => playAlertSound(draft.sound, draft.volume)}
                   >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    className="button button--primary button--small"
-                    onClick={handleConfirmImport}
-                  >
-                    Replace data
+                    Preview
                   </button>
                 </div>
               </div>
-            )}
 
-            {dataMessage && (
-              <p
-                className={
-                  dataMessage.kind === 'error'
-                    ? 'settings-error'
-                    : 'settings-hint'
-                }
-                role={dataMessage.kind === 'error' ? 'alert' : 'status'}
-              >
-                {dataMessage.text}
+              <div className="settings-row">
+                <label htmlFor="settings-volume" className="settings-label">
+                  Volume
+                </label>
+                <div className="settings-inline settings-inline--stretch">
+                  <input
+                    id="settings-volume"
+                    className="settings-range"
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={Math.round(draft.volume * 100)}
+                    onChange={(event) =>
+                      setField('volume', Number(event.target.value) / 100)
+                    }
+                  />
+                  <output className="settings-output">
+                    {Math.round(draft.volume * 100)}%
+                  </output>
+                </div>
+              </div>
+              {errors.volume && (
+                <p className="settings-error">{errors.volume}</p>
+              )}
+
+              <label className="settings-toggle">
+                <span className="settings-toggle__text">
+                  <span className="settings-toggle__title">
+                    Auto-start the next session
+                  </span>
+                  <span className="settings-toggle__hint">
+                    Begin breaks and focus sessions automatically.
+                  </span>
+                </span>
+                <input
+                  type="checkbox"
+                  className="settings-toggle__input"
+                  checked={draft.autoStart}
+                  onChange={(event) =>
+                    setField('autoStart', event.target.checked)
+                  }
+                />
+                <span className="settings-toggle__switch" aria-hidden="true" />
+              </label>
+
+              <label className="settings-toggle">
+                <span className="settings-toggle__text">
+                  <span className="settings-toggle__title">
+                    Browser notifications
+                  </span>
+                  <span className="settings-toggle__hint">
+                    {notificationNote}
+                  </span>
+                </span>
+                <input
+                  type="checkbox"
+                  className="settings-toggle__input"
+                  checked={draft.notifications}
+                  disabled={permission === 'unsupported'}
+                  onChange={(event) =>
+                    handleNotifications(event.target.checked)
+                  }
+                />
+                <span className="settings-toggle__switch" aria-hidden="true" />
+              </label>
+            </fieldset>
+
+            <fieldset className="settings-group">
+              <legend className="settings-group__legend">Appearance</legend>
+              <label className="settings-toggle">
+                <span className="settings-toggle__text">
+                  <span className="settings-toggle__title">Dark mode</span>
+                  <span className="settings-toggle__hint">
+                    Saved on this device. Follows your system setting until you
+                    choose.
+                  </span>
+                </span>
+                <input
+                  type="checkbox"
+                  className="settings-toggle__input"
+                  checked={theme === 'dark'}
+                  onChange={(event) => handleTheme(event.target.checked)}
+                />
+                <span className="settings-toggle__switch" aria-hidden="true" />
+              </label>
+            </fieldset>
+
+            <fieldset className="settings-group">
+              <legend className="settings-group__legend">Data</legend>
+              <p className="settings-hint">
+                Back up your settings, tasks, and session history, or restore a
+                previous backup.
               </p>
-            )}
-          </fieldset>
+
+              <div className="settings-data-actions">
+                <button
+                  type="button"
+                  className="button button--ghost button--small"
+                  onClick={handleExport}
+                >
+                  Export data
+                </button>
+                <button
+                  type="button"
+                  className="button button--ghost button--small"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  Import data
+                </button>
+                <input
+                  ref={fileInputRef}
+                  className="sr-only"
+                  type="file"
+                  accept=".json,application/json"
+                  aria-label="Choose backup file"
+                  tabIndex={-1}
+                  onChange={handleFileChange}
+                />
+              </div>
+
+              {pendingImport && (
+                <div className="settings-import">
+                  <p>
+                    Replace current data with the backup from{' '}
+                    {new Date(
+                      pendingImport.backup.exportedAt,
+                    ).toLocaleDateString(undefined, {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                    ? {pendingImport.backup.data.tasks.tasks.length}{' '}
+                    {pendingImport.backup.data.tasks.tasks.length === 1
+                      ? 'task'
+                      : 'tasks'}{' '}
+                    · {pendingImport.backup.data.sessions.length}{' '}
+                    {pendingImport.backup.data.sessions.length === 1
+                      ? 'session'
+                      : 'sessions'}
+                    .
+                  </p>
+                  {pendingImport.warnings.length > 0 && (
+                    <p className="settings-warning">
+                      {pendingImport.warnings.join(' ')}
+                    </p>
+                  )}
+                  <div className="settings-data-actions">
+                    <button
+                      type="button"
+                      className="button button--ghost button--small"
+                      onClick={() => setPendingImport(null)}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      className="button button--primary button--small"
+                      onClick={handleConfirmImport}
+                    >
+                      Replace data
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {dataMessage && (
+                <p
+                  className={
+                    dataMessage.kind === 'error'
+                      ? 'settings-error'
+                      : 'settings-hint'
+                  }
+                  role={dataMessage.kind === 'error' ? 'alert' : 'status'}
+                >
+                  {dataMessage.text}
+                </p>
+              )}
+            </fieldset>
+          </div>
 
           <div className="modal__footer">
             <button
@@ -494,6 +552,7 @@ interface NumberSettingProps {
   max: number
   error?: string
   onChange: (value: number) => void
+  onBlur: () => void
 }
 
 function NumberSetting({
@@ -504,6 +563,7 @@ function NumberSetting({
   max,
   error,
   onChange,
+  onBlur,
 }: NumberSettingProps) {
   return (
     <div className="settings-field">
@@ -517,8 +577,10 @@ function NumberSetting({
         min={min}
         max={max}
         step={1}
+        inputMode="numeric"
         value={Number.isFinite(value) ? value : ''}
         onChange={(event) => onChange(Number(event.target.value))}
+        onBlur={onBlur}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${id}-error` : undefined}
       />

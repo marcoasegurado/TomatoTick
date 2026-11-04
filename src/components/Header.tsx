@@ -1,3 +1,5 @@
+import { BarChart3, Menu, Settings } from 'lucide-react'
+
 interface HeaderProps {
   onOpenSettings: () => void
   onOpenTasks: () => void
@@ -34,7 +36,7 @@ function Header({
           aria-expanded={tasksOpen}
           aria-controls="tasks-sidebar"
         >
-          <span aria-hidden="true">☰</span>{' '}
+          <Menu size={18} aria-hidden="true" />
           <span className="header__action-label">Tasks</span>
         </button>
         <button
@@ -43,7 +45,7 @@ function Header({
           onClick={onOpenStats}
           aria-label="Open stats"
         >
-          <span aria-hidden="true">📊</span>{' '}
+          <BarChart3 size={18} aria-hidden="true" />
           <span className="header__action-label">Stats</span>
         </button>
         <button
@@ -52,7 +54,7 @@ function Header({
           onClick={onOpenSettings}
           aria-label="Open settings"
         >
-          <span aria-hidden="true">⚙</span>{' '}
+          <Settings size={18} aria-hidden="true" />
           <span className="header__action-label">Settings</span>
         </button>
       </div>

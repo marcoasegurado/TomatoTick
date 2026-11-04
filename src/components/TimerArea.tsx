@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSessions } from '../context/SessionsContext'
 import { useSettings } from '../context/SettingsContext'
 import { useTasks } from '../context/TasksContext'
@@ -86,6 +86,22 @@ function TimerArea() {
     document.documentElement.dataset.mode = timer.mode
   }, [timer.mode])
 
+  // Briefly celebrate a session that ran to completion (UI only).
+  const [celebrate, setCelebrate] = useState(false)
+  const previousSession = useRef({ status: timer.status, mode: timer.mode })
+  useEffect(() => {
+    const previous = previousSession.current
+    previousSession.current = { status: timer.status, mode: timer.mode }
+    const completed =
+      previous.status === 'running' &&
+      timer.status === 'idle' &&
+      previous.mode !== timer.mode
+    if (!completed) return
+    setCelebrate(true)
+    const id = window.setTimeout(() => setCelebrate(false), 900)
+    return () => window.clearTimeout(id)
+  }, [timer.status, timer.mode])
+
   return (
     <section className="timer-area" aria-label="Pomodoro timer">
       <p className="sr-only" role="status" aria-live="polite">
@@ -96,6 +112,7 @@ function TimerArea() {
 
         <ProgressRing
           progress={timer.progress}
+          celebrate={celebrate}
           label={`${modeLabel} timer, ${formatTime(timer.remainingSeconds)} remaining`}
         >
           <p className="timer-card__mode">{modeLabel}</p>

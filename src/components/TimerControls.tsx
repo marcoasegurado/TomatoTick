@@ -1,3 +1,4 @@
+import { Pause, Play, RotateCcw, SkipForward } from 'lucide-react'
 import type { TimerStatus } from '../utils/timer'
 
 interface TimerControlsProps {
@@ -24,7 +25,8 @@ function TimerControls({
         aria-keyshortcuts="R"
         title="Reset the current session (R)"
       >
-        <span aria-hidden="true">↺</span> Reset
+        <RotateCcw size={17} aria-hidden="true" />
+        Reset
       </button>
 
       <button
@@ -35,7 +37,11 @@ function TimerControls({
         aria-keyshortcuts="Space"
         title={isRunning ? 'Pause timer (Space)' : 'Start timer (Space)'}
       >
-        <span aria-hidden="true">{isRunning ? '❚❚' : '▶'}</span>{' '}
+        {isRunning ? (
+          <Pause size={18} aria-hidden="true" />
+        ) : (
+          <Play size={18} aria-hidden="true" />
+        )}
         {isRunning ? 'Pause' : 'Start'}
       </button>
 
@@ -46,7 +52,8 @@ function TimerControls({
         aria-keyshortcuts="S"
         title="Skip to the next session (S)"
       >
-        Skip <span aria-hidden="true">⏭</span>
+        Skip
+        <SkipForward size={17} aria-hidden="true" />
       </button>
     </div>
   )

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react'
+import { Target, Trash2, X } from 'lucide-react'
 import { useTasks } from '../context/TasksContext'
 import { useDialog } from '../hooks/useDialog'
 import { useMediaQuery } from '../hooks/useMediaQuery'
@@ -57,7 +58,7 @@ function Sidebar({ open, onClose }: SidebarProps) {
             aria-label="Close tasks"
             onClick={onClose}
           >
-            ×
+            <X size={20} aria-hidden="true" />
           </button>
         </div>
 
@@ -99,15 +100,17 @@ function Sidebar({ open, onClose }: SidebarProps) {
                     .filter(Boolean)
                     .join(' ')}
                 >
-                  <input
-                    type="checkbox"
-                    className="task-item__checkbox"
-                    checked={task.completed}
-                    onChange={() => toggleTask(task.id)}
-                    aria-label={`Mark "${task.title}" as ${
-                      task.completed ? 'incomplete' : 'complete'
-                    }`}
-                  />
+                  <label className="task-item__check">
+                    <input
+                      type="checkbox"
+                      className="task-item__checkbox"
+                      checked={task.completed}
+                      onChange={() => toggleTask(task.id)}
+                      aria-label={`Mark "${task.title}" as ${
+                        task.completed ? 'incomplete' : 'complete'
+                      }`}
+                    />
+                  </label>
 
                   <div className="task-item__body">
                     <span className="task-item__title">{task.title}</span>
@@ -140,7 +143,7 @@ function Sidebar({ open, onClose }: SidebarProps) {
                         setActiveTask(isActive ? null : task.id)
                       }
                     >
-                      <span aria-hidden="true">◎</span>
+                      <Target size={16} aria-hidden="true" />
                     </button>
                     <button
                       type="button"
@@ -149,7 +152,7 @@ function Sidebar({ open, onClose }: SidebarProps) {
                       title="Delete task"
                       onClick={() => deleteTask(task.id)}
                     >
-                      <span aria-hidden="true">✕</span>
+                      <Trash2 size={16} aria-hidden="true" />
                     </button>
                   </div>
                 </li>

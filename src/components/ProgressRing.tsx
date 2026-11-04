@@ -10,14 +10,25 @@ interface ProgressRingProps {
   /** Elapsed fraction of the session, from 0 to 1. */
   progress: number
   label: string
+  /** Briefly pulse the ring after a session completes. */
+  celebrate?: boolean
   children: ReactNode
 }
 
-function ProgressRing({ progress, label, children }: ProgressRingProps) {
+function ProgressRing({
+  progress,
+  label,
+  celebrate = false,
+  children,
+}: ProgressRingProps) {
   const clamped = Math.min(1, Math.max(0, progress))
 
   return (
-    <div className="timer-display">
+    <div
+      className={
+        celebrate ? 'timer-display timer-display--complete' : 'timer-display'
+      }
+    >
       <svg
         className="progress-ring"
         viewBox={`0 0 ${SIZE} ${SIZE}`}

@@ -4,7 +4,10 @@ import App from './App'
 import { SettingsProvider } from './context/SettingsContext'
 import { SessionsProvider } from './context/SessionsContext'
 import { TasksProvider } from './context/TasksContext'
+import { initTheme } from './utils/theme'
 import './index.css'
+
+initTheme()
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

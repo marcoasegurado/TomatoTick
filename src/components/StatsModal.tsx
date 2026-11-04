@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { useMemo, type ReactNode } from 'react'
+import { Flame, Timer, Trophy, X } from 'lucide-react'
 import { useDialog } from '../hooks/useDialog'
 import {
   Bar,
@@ -27,7 +28,7 @@ interface StatCardProps {
   label: string
   value: string
   detail?: string
-  icon?: string
+  icon?: ReactNode
 }
 
 function StatCard({ label, value, detail, icon }: StatCardProps) {
@@ -88,7 +89,7 @@ function StatsModal({ onClose }: StatsModalProps) {
             aria-label="Close stats"
             onClick={onClose}
           >
-            ×
+            <X size={20} aria-hidden="true" />
           </button>
         </div>
 
@@ -97,29 +98,25 @@ function StatsModal({ onClose }: StatsModalProps) {
             <StatCard
               label="Sessions today"
               value={String(summary.today.sessions)}
-              detail={plural(summary.today.sessions, 'session', 'sessions')}
             />
             <StatCard
               label="Focus today"
               value={formatMinutes(summary.today.minutes)}
-              detail="Total time"
             />
             <StatCard
               label="Sessions all-time"
               value={String(summary.allTime.sessions)}
-              detail={plural(summary.allTime.sessions, 'session', 'sessions')}
             />
             <StatCard
               label="Focus all-time"
               value={formatMinutes(summary.allTime.minutes)}
-              detail="Total time"
             />
           </div>
 
           {!hasSessions ? (
             <div className="stats-empty">
               <span className="stats-empty__icon" aria-hidden="true">
-                🍅
+                <Timer size={40} />
               </span>
               <h3>No focus sessions yet</h3>
               <p>
@@ -140,7 +137,7 @@ function StatsModal({ onClose }: StatsModalProps) {
                       <CartesianGrid
                         strokeDasharray="3 3"
                         vertical={false}
-                        stroke="rgba(122, 99, 99, 0.2)"
+                        stroke="var(--chart-grid)"
                       />
                       <XAxis
                         dataKey="label"
@@ -156,13 +153,17 @@ function StatsModal({ onClose }: StatsModalProps) {
                         tick={{ fontSize: 12, fill: 'var(--text-muted)' }}
                       />
                       <Tooltip
-                        cursor={{ fill: 'rgba(122, 99, 99, 0.08)' }}
+                        cursor={{ fill: 'var(--chart-cursor)' }}
                         formatter={(value) => [`${value} min`, 'Focus']}
                         contentStyle={{
                           borderRadius: 12,
                           border: '1px solid var(--border)',
+                          background: 'var(--surface)',
+                          color: 'var(--text)',
                           fontSize: 13,
                         }}
+                        labelStyle={{ color: 'var(--text)' }}
+                        itemStyle={{ color: 'var(--text)' }}
                       />
                       <Bar
                         dataKey="minutes"
@@ -180,12 +181,12 @@ function StatsModal({ onClose }: StatsModalProps) {
                 <StatCard
                   label="Current streak"
                   value={`${streaks.current} ${plural(streaks.current, 'day', 'days')}`}
-                  icon="🔥"
+                  icon={<Flame size={22} aria-hidden="true" />}
                 />
                 <StatCard
                   label="Longest streak"
                   value={`${streaks.longest} ${plural(streaks.longest, 'day', 'days')}`}
-                  icon="🏆"
+                  icon={<Trophy size={22} aria-hidden="true" />}
                 />
               </div>
 
