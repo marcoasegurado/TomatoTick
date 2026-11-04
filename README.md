@@ -1,30 +1,46 @@
 # TomatoTick 🍅
 
-TomatoTick is a cheerful, browser-based Pomodoro timer that helps you stay
-focused, one tomato at a time. It combines configurable focus and break
-sessions with task tracking, session history, and lightweight productivity
-stats.
+**A cheerful Pomodoro timer that helps you stay focused, one tomato at a time.**
+
+[![CI](https://github.com/marcoasegurado/TomatoTick/actions/workflows/ci.yml/badge.svg)](https://github.com/marcoasegurado/TomatoTick/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+**[Try TomatoTick live →](https://tomatotick.marcoeduardo-asegurado.workers.dev/)**
+
+TomatoTick is a browser-based Pomodoro timer that combines configurable focus
+and break sessions with task tracking, session history, and lightweight
+productivity stats. It runs entirely in your browser, needs no account, and
+works offline after the first load.
+
+## Screenshots
+
+![TomatoTick timer showing a paused focus session, the progress ring, and the task sidebar](docs/screenshots/timer.png)
+
+| Task list | Statistics |
+| --- | --- |
+| <img src="docs/screenshots/tasks.png" alt="Task drawer on mobile with tasks and focus progress" width="300" /> | <img src="docs/screenshots/stats.png" alt="Stats modal with summary cards, weekly chart, streaks, activity heatmap, and per-task breakdown" width="450" /> |
 
 ## Features
 
 - **Pomodoro timer** with focus, short break, and long break modes.
 - **Configurable sessions** for focus length, break lengths, and the number of
   focus sessions between long breaks.
+- **Accurate, timestamp-based countdown** that stays correct in background tabs
+  and resumes after a refresh or closed tab.
+- **Live timer in the tab title** so you can see the remaining time from any
+  browser tab.
 - **Task list** for adding, completing, deleting, and selecting the task you
   are currently working on.
 - **Session history and statistics**, including:
   - Sessions and focus time today and all-time
   - Last-seven-days focus chart
   - Current and longest streaks
-  - Activity heatmap
+  - GitHub-style activity heatmap
   - Focus time grouped by task
 - **Audio alerts** with bell, chime, and beep options plus volume control.
 - **Browser notifications** when sessions end, where supported and permitted.
 - **Auto-start** for the next session.
-- **Keyboard shortcuts**:
-  - `Space` — start or pause the timer
-  - `R` — reset the current session
-  - `S` — skip to the next session
+- **Keyboard shortcuts** for starting, resetting, and skipping sessions.
 - **Persistent browser storage** so the timer, settings, tasks, and session
   history survive page refreshes.
 - **Responsive interface** with accessible labels, live timer status, and
@@ -32,11 +48,12 @@ stats.
 
 ## Tech stack
 
-- React 19
-- TypeScript
+- React 19 with TypeScript
 - Vite
 - Recharts
 - Vitest and Testing Library
+- GitHub Actions for CI
+- Cloudflare for hosting
 
 ## Getting started
 
@@ -74,27 +91,6 @@ To preview the production build locally:
 npm run preview
 ```
 
-## Deploying to Cloudflare Pages
-
-TomatoTick is a static single-page app, so it deploys to Cloudflare Pages with
-no server-side configuration. The deployment is set up in the Cloudflare
-dashboard:
-
-1. Go to **Workers & Pages** and create a **Pages** project.
-2. Connect the GitHub repository for this project.
-3. Use these build settings:
-
-| Setting | Value |
-| --- | --- |
-| Framework preset | Vite |
-| Build command | `npm run build` |
-| Build output directory | `dist` |
-| Production branch | `main` |
-
-Every push to `main` publishes the live site, and Cloudflare creates preview
-deployments for other branches. The Vite `base` option stays at `/` because
-Cloudflare Pages serves the app from the site root.
-
 ## Available scripts
 
 | Command | Description |
@@ -120,6 +116,17 @@ The timer supports the standard Pomodoro cycle: after the configured number of
 focus sessions, it switches to a long break; otherwise, it switches to a short
 break.
 
+## Keyboard shortcuts
+
+| Key | Action |
+| --- | --- |
+| `Space` | Start or pause the current session |
+| `R` | Reset the current session |
+| `S` | Skip to the next session |
+
+Shortcuts are ignored while you are typing in an input. They are also listed in
+the Settings modal.
+
 ## Data and privacy
 
 TomatoTick is a client-side application. It does not require an account or a
@@ -136,6 +143,8 @@ Browser notifications are optional and require permission from the browser.
 ## Project structure
 
 ```text
+docs/
+└── screenshots/  Screenshots used in this README
 src/
 ├── components/   UI components for the timer, tasks, settings, and stats
 ├── context/      React context providers for settings, tasks, and sessions
@@ -157,10 +166,32 @@ Run all tests with:
 npm test
 ```
 
-Tests cover timer behavior, settings validation, task operations, session
-statistics, time formatting, and the main application flow.
+The suite covers timer behavior, settings validation, task operations, session
+statistics, time formatting, and the main application flow. GitHub Actions runs
+the tests and a production build on every push and pull request.
 
-## Future plans
+## Deploying to Cloudflare Pages
+
+TomatoTick is a static single-page app, so it deploys to Cloudflare Pages with
+no server-side configuration. The deployment is set up in the Cloudflare
+dashboard:
+
+1. Go to **Workers & Pages** and create a **Pages** project.
+2. Connect the GitHub repository for this project.
+3. Use these build settings:
+
+| Setting | Value |
+| --- | --- |
+| Framework preset | Vite |
+| Build command | `npm run build` |
+| Build output directory | `dist` |
+| Production branch | `main` |
+
+Every push to `main` publishes the live site, and Cloudflare creates preview
+deployments for other branches. The Vite `base` option stays at `/` because
+Cloudflare Pages serves the app from the site root.
+
+## Roadmap
 
 The roadmap for TomatoTick includes:
 
@@ -187,4 +218,4 @@ currently part of the production behavior described above.
 
 ## License
 
-No license has been specified for this project yet.
+This project is licensed under the [MIT License](LICENSE).

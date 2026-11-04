@@ -161,17 +161,17 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 **Goal:** A portfolio-ready repository.
 
-- [ ] Write a polished `README.md` with:
-  - [ ] Project title, short description, and live demo link.
-  - [ ] Screenshots or a GIF of the timer, task list, and stats.
-  - [ ] Features list.
-  - [ ] Tech stack.
-  - [ ] Getting started (install, run, test, build).
-  - [ ] Keyboard shortcuts table.
-  - [ ] Project structure overview.
-  - [ ] Roadmap (e.g. backend sync, data export/import, PWA).
-- [ ] Add a `LICENSE` file (MIT).
-- [ ] Final cleanup: remove unused files and dead code, and make sure there are no console errors.
+- [x] Write a polished `README.md` with:
+  - [x] Project title, short description, and live demo link.
+  - [x] Screenshots or a GIF of the timer, task list, and stats.
+  - [x] Features list.
+  - [x] Tech stack.
+  - [x] Getting started (install, run, test, build).
+  - [x] Keyboard shortcuts table.
+  - [x] Project structure overview.
+  - [x] Roadmap (e.g. backend sync, data export/import, PWA).
+- [x] Add a `LICENSE` file (MIT).
+- [x] Final cleanup: remove unused files and dead code, and make sure there are no console errors.
 
 **Done when:** A new visitor can understand, run, and try the project from the README alone.
 

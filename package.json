@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "description": "A cheerful Pomodoro timer that helps you stay focused, one tomato at a time.",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
