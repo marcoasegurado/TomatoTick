@@ -1,5 +1,20 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import {
+  useRef,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from 'react'
+import { useSessions } from '../context/SessionsContext'
 import { useSettings } from '../context/SettingsContext'
+import { useTasks } from '../context/TasksContext'
+import { useDialog } from '../hooks/useDialog'
+import {
+  MAX_BACKUP_BYTES,
+  createBackup,
+  parseBackup,
+  serializeBackup,
+  type Backup,
+} from '../utils/backup'
 import {
   playAlertSound,
   getNotificationSupport,
@@ -19,26 +34,35 @@ interface SettingsModalProps {
   onClose: () => void
 }
 
+async function readFileText(file: File): Promise<string> {
+  if (typeof file.text === 'function') return file.text()
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => resolve(String(reader.result ?? ''))
+    reader.onerror = () => reject(reader.error ?? new Error('Read failed'))
+    reader.readAsText(file)
+  })
+}
+
 function SettingsModal({ onClose }: SettingsModalProps) {
   const { settings, updateSettings } = useSettings()
+  const { tasks, activeTaskId, replaceTaskState } = useTasks()
+  const { sessions, replaceSessions } = useSessions()
   const [draft, setDraft] = useState<Settings>(settings)
   const [errors, setErrors] = useState<SettingsErrors>({})
   const [permission, setPermission] = useState<NotificationSupport>(() =>
     getNotificationSupport(),
   )
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
-    }
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.body.style.overflow = previousOverflow
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [onClose])
+  const [pendingImport, setPendingImport] = useState<{
+    backup: Backup
+    warnings: string[]
+  } | null>(null)
+  const [dataMessage, setDataMessage] = useState<{
+    kind: 'status' | 'error'
+    text: string
+  } | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const dialog = useDialog({ open: true, onClose })
 
   const setField = <Key extends keyof Settings>(
     key: Key,
@@ -69,6 +93,85 @@ function SettingsModal({ onClose }: SettingsModalProps) {
     onClose()
   }
 
+  const handleExport = () => {
+    try {
+      const backup = createBackup(
+        settings,
+        { tasks, activeTaskId },
+        sessions,
+      )
+      const blob = new Blob([serializeBackup(backup)], {
+        type: 'application/json',
+      })
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `tomatotick-backup-${backup.exportedAt.slice(0, 10)}.json`
+      document.body.append(link)
+      link.click()
+      link.remove()
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+      setDataMessage({ kind: 'status', text: 'Backup downloaded.' })
+    } catch {
+      setDataMessage({
+        kind: 'error',
+        text: 'Could not create the backup file.',
+      })
+    }
+  }
+
+  const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    event.target.value = ''
+    if (!file) return
+
+    if (file.size > MAX_BACKUP_BYTES) {
+      setPendingImport(null)
+      setDataMessage({
+        kind: 'error',
+        text: 'This backup file is too large (5 MB maximum).',
+      })
+      return
+    }
+
+    try {
+      const raw = await readFileText(file)
+      const result = parseBackup(raw)
+      if (!result.ok) {
+        setPendingImport(null)
+        setDataMessage({ kind: 'error', text: result.error })
+        return
+      }
+      setDataMessage(null)
+      setPendingImport({ backup: result.backup, warnings: result.warnings })
+    } catch {
+      setPendingImport(null)
+      setDataMessage({ kind: 'error', text: 'Could not read that file.' })
+    }
+  }
+
+  const handleConfirmImport = () => {
+    if (!pendingImport) return
+    const { backup } = pendingImport
+    const taskCount = backup.data.tasks.tasks.length
+    const sessionCount = backup.data.sessions.length
+
+    updateSettings(backup.data.settings)
+    replaceTaskState(backup.data.tasks)
+    replaceSessions(backup.data.sessions)
+    setDraft(backup.data.settings)
+    setPendingImport(null)
+    setDataMessage({
+      kind: 'status',
+      text: `Imported ${taskCount} ${
+        taskCount === 1 ? 'task' : 'tasks'
+      } and ${sessionCount} ${
+        sessionCount === 1 ? 'session' : 'sessions'
+      }.`,
+    })
+  }
+
+
   const notificationNote = (() => {
     if (permission === 'unsupported') {
       return 'This browser does not support notifications.'
@@ -90,6 +193,7 @@ function SettingsModal({ onClose }: SettingsModalProps) {
       }}
     >
       <div
+        ref={dialog.ref}
         className="modal"
         role="dialog"
         aria-modal="true"
@@ -270,6 +374,98 @@ function SettingsModal({ onClose }: SettingsModalProps) {
                 </span>
               </span>
             </label>
+          </fieldset>
+
+          <fieldset className="settings-group">
+            <legend className="settings-group__legend">Data</legend>
+            <p className="settings-hint">
+              Back up your settings, tasks, and session history, or restore a
+              previous backup.
+            </p>
+
+            <div className="settings-data-actions">
+              <button
+                type="button"
+                className="button button--ghost button--small"
+                onClick={handleExport}
+              >
+                Export data
+              </button>
+              <button
+                type="button"
+                className="button button--ghost button--small"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                Import data
+              </button>
+              <input
+                ref={fileInputRef}
+                className="sr-only"
+                type="file"
+                accept=".json,application/json"
+                aria-label="Choose backup file"
+                tabIndex={-1}
+                onChange={handleFileChange}
+              />
+            </div>
+
+            {pendingImport && (
+              <div className="settings-import">
+                <p>
+                  Replace current data with the backup from{' '}
+                  {new Date(
+                    pendingImport.backup.exportedAt,
+                  ).toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
+                  ? {pendingImport.backup.data.tasks.tasks.length}{' '}
+                  {pendingImport.backup.data.tasks.tasks.length === 1
+                    ? 'task'
+                    : 'tasks'}{' '}
+                  · {pendingImport.backup.data.sessions.length}{' '}
+                  {pendingImport.backup.data.sessions.length === 1
+                    ? 'session'
+                    : 'sessions'}
+                  .
+                </p>
+                {pendingImport.warnings.length > 0 && (
+                  <p className="settings-warning">
+                    {pendingImport.warnings.join(' ')}
+                  </p>
+                )}
+                <div className="settings-data-actions">
+                  <button
+                    type="button"
+                    className="button button--ghost button--small"
+                    onClick={() => setPendingImport(null)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    className="button button--primary button--small"
+                    onClick={handleConfirmImport}
+                  >
+                    Replace data
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {dataMessage && (
+              <p
+                className={
+                  dataMessage.kind === 'error'
+                    ? 'settings-error'
+                    : 'settings-hint'
+                }
+                role={dataMessage.kind === 'error' ? 'alert' : 'status'}
+              >
+                {dataMessage.text}
+              </p>
+            )}
           </fieldset>
 
           <div className="modal__footer">

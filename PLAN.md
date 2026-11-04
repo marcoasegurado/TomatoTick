@@ -177,9 +177,23 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 ---
 
+## Phase 9: Performance, accessibility, and data safety
+
+**Goal:** A faster, more accessible app with a way to back up local data.
+
+- [x] Lazy-load the stats modal and split the chart library into its own chunk, so the initial bundle no longer includes Recharts.
+- [x] Add focus management for dialogs: move focus in, trap Tab, close on `Escape`, restore focus on close, and lock background scrolling.
+- [x] Treat the mobile task sidebar as a modal drawer: close on `Escape`, remove it from the tab order when hidden, and expose `aria-expanded`/`aria-controls` on the Tasks button.
+- [x] Add versioned JSON export/import for settings, tasks, and session history, with validation, warnings for skipped entries, and confirmation before replacing data.
+- [x] Add tests for backup parsing, dialog focus behavior, the mobile drawer, and the import flow.
+- [x] Update the README for data backup and keep the bundle warning-free.
+
+**Done when:** Initial load avoids the chart bundle, every overlay is keyboard-accessible, and data can be exported and restored safely.
+
+---
+
 ## Out of scope (for now)
 
 - Backend, accounts, or cloud sync
-- Data export/import
 - Installable PWA / offline mode
 - Task categories or tags

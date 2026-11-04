@@ -4,7 +4,8 @@ import App from './App'
 import { SettingsProvider } from './context/SettingsContext'
 import { SessionsProvider } from './context/SessionsContext'
 import { TasksProvider } from './context/TasksContext'
-import { SETTINGS_STORAGE_KEY } from './utils/settings'
+import { createBackup, serializeBackup } from './utils/backup'
+import { DEFAULT_SETTINGS, SETTINGS_STORAGE_KEY } from './utils/settings'
 import { SESSIONS_STORAGE_KEY } from './utils/sessions'
 import { TASKS_STORAGE_KEY } from './utils/tasks'
 import { TIMER_STORAGE_KEY } from './utils/timer'
@@ -19,6 +20,24 @@ function renderApp() {
       </TasksProvider>
     </SettingsProvider>,
   )
+}
+
+/** Pretend the viewport is narrow enough for the drawer layout. */
+function mockMobileViewport() {
+  const original = window.matchMedia
+  window.matchMedia = ((query: string) => ({
+    matches: true,
+    media: query,
+    onchange: null,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    addListener: () => {},
+    removeListener: () => {},
+    dispatchEvent: () => false,
+  })) as unknown as typeof window.matchMedia
+  return () => {
+    window.matchMedia = original
+  }
 }
 
 describe('App shell', () => {
@@ -114,13 +133,137 @@ describe('App shell', () => {
     ).toBeInTheDocument()
   })
 
-  it('opens stats with an empty state when there are no sessions', () => {
+  it('opens stats with an empty state when there are no sessions', async () => {
     renderApp()
 
     fireEvent.click(screen.getByRole('button', { name: /stats/i }))
+    expect(await screen.findByText('No focus sessions yet')).toBeInTheDocument()
     expect(screen.getByRole('dialog')).toBeInTheDocument()
-    expect(screen.getByText('No focus sessions yet')).toBeInTheDocument()
     expect(screen.getByText('Sessions today')).toBeInTheDocument()
+  })
+
+  it('moves focus into settings and restores it on Escape', () => {
+    renderApp()
+
+    const trigger = screen.getByRole('button', { name: 'Open settings' })
+    trigger.focus()
+    fireEvent.click(trigger)
+
+    expect(
+      screen.getByRole('button', { name: 'Close settings' }),
+    ).toHaveFocus()
+
+    fireEvent.keyDown(window, { key: 'Escape' })
+
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(trigger).toHaveFocus()
+  })
+
+  it('keeps Tab focus inside the settings dialog', () => {
+    renderApp()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open settings' }))
+    const close = screen.getByRole('button', { name: 'Close settings' })
+    const save = screen.getByRole('button', { name: /save settings/i })
+
+    save.focus()
+    fireEvent.keyDown(window, { key: 'Tab' })
+    expect(close).toHaveFocus()
+
+    close.focus()
+    fireEvent.keyDown(window, { key: 'Tab', shiftKey: true })
+    expect(save).toHaveFocus()
+  })
+
+  it('uses the task sidebar as a modal drawer on mobile', () => {
+    const restoreViewport = mockMobileViewport()
+    try {
+      renderApp()
+
+      const trigger = screen.getByRole('button', { name: 'Open tasks' })
+      const sidebar = document.getElementById('tasks-sidebar')
+      expect(trigger).toHaveAttribute('aria-expanded', 'false')
+      expect(sidebar).toHaveAttribute('inert')
+
+      trigger.focus()
+      fireEvent.click(trigger)
+
+      expect(trigger).toHaveAttribute('aria-expanded', 'true')
+      expect(sidebar).not.toHaveAttribute('inert')
+      expect(
+        screen.getByRole('button', { name: 'Close tasks' }),
+      ).toHaveFocus()
+
+      fireEvent.keyDown(window, { key: 'Escape' })
+
+      expect(trigger).toHaveAttribute('aria-expanded', 'false')
+      expect(sidebar).toHaveAttribute('inert')
+      expect(trigger).toHaveFocus()
+    } finally {
+      restoreViewport()
+    }
+  })
+
+  it('imports a backup after confirmation', async () => {
+    const now = Date.now()
+    const backup = createBackup(
+      { ...DEFAULT_SETTINGS, focus: 30 },
+      {
+        tasks: [
+          {
+            id: 'imported-1',
+            title: 'Imported task',
+            completed: false,
+            createdAt: now,
+            focusSessions: 1,
+            focusMinutes: 25,
+          },
+        ],
+        activeTaskId: 'imported-1',
+      },
+      [
+        {
+          id: 'session-1',
+          completedAt: now,
+          durationMs: 25 * 60_000,
+          taskId: 'imported-1',
+          taskTitle: 'Imported task',
+        },
+      ],
+      now,
+    )
+    renderApp()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open settings' }))
+    const file = new File([serializeBackup(backup)], 'backup.json', {
+      type: 'application/json',
+    })
+    fireEvent.change(screen.getByLabelText('Choose backup file'), {
+      target: { files: [file] },
+    })
+
+    expect(
+      await screen.findByText(/replace current data/i),
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Replace data' }))
+
+    expect(
+      await screen.findByText(/imported 1 task and 1 session/i),
+    ).toBeInTheDocument()
+    expect(screen.getAllByText('Imported task').length).toBeGreaterThan(0)
+    expect(await screen.findByText('30:00')).toBeInTheDocument()
+
+    const savedTasks = JSON.parse(
+      localStorage.getItem(TASKS_STORAGE_KEY) ?? '{}',
+    )
+    expect(savedTasks.activeTaskId).toBe('imported-1')
+    expect(savedTasks.tasks[0].title).toBe('Imported task')
+
+    const savedSessions = JSON.parse(
+      localStorage.getItem(SESSIONS_STORAGE_KEY) ?? '[]',
+    )
+    expect(savedSessions).toHaveLength(1)
   })
 
   it('records a completed focus session and credits the active task', () => {

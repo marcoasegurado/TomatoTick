@@ -2,9 +2,15 @@ interface HeaderProps {
   onOpenSettings: () => void
   onOpenTasks: () => void
   onOpenStats: () => void
+  tasksOpen: boolean
 }
 
-function Header({ onOpenSettings, onOpenTasks, onOpenStats }: HeaderProps) {
+function Header({
+  onOpenSettings,
+  onOpenTasks,
+  onOpenStats,
+  tasksOpen,
+}: HeaderProps) {
   return (
     <header className="header">
       <div className="header__brand">
@@ -25,6 +31,8 @@ function Header({ onOpenSettings, onOpenTasks, onOpenStats }: HeaderProps) {
           className="header__action header__tasks"
           onClick={onOpenTasks}
           aria-label="Open tasks"
+          aria-expanded={tasksOpen}
+          aria-controls="tasks-sidebar"
         >
           <span aria-hidden="true">☰</span>{' '}
           <span className="header__action-label">Tasks</span>

@@ -900,6 +900,37 @@ button {
   color: var(--text-muted);
 }
 
+.settings-data-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.settings-import {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+  padding: 14px;
+  background-color: var(--surface-muted);
+  border-radius: var(--radius-md);
+}
+
+.settings-import p {
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.settings-import .settings-data-actions {
+  margin-top: 0;
+}
+
+.settings-warning {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
 .shortcuts {
   display: flex;
   flex-direction: column;

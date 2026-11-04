@@ -1,9 +1,10 @@
-import { useCallback, useState } from 'react'
+import { lazy, Suspense, useCallback, useState } from 'react'
 import Header from './components/Header'
 import SettingsModal from './components/SettingsModal'
 import Sidebar from './components/Sidebar'
-import StatsModal from './components/StatsModal'
 import TimerArea from './components/TimerArea'
+
+const StatsModal = lazy(() => import('./components/StatsModal'))
 
 function App() {
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -23,6 +24,7 @@ function App() {
         onOpenSettings={openSettings}
         onOpenTasks={openTasks}
         onOpenStats={openStats}
+        tasksOpen={tasksOpen}
       />
       <div className="app__body">
         <main className="app__main">
@@ -31,7 +33,17 @@ function App() {
         <Sidebar open={tasksOpen} onClose={closeTasks} />
       </div>
       {settingsOpen && <SettingsModal onClose={closeSettings} />}
-      {statsOpen && <StatsModal onClose={closeStats} />}
+      {statsOpen && (
+        <Suspense
+          fallback={
+            <p className="sr-only" role="status">
+              Loading stats…
+            </p>
+          }
+        >
+          <StatsModal onClose={closeStats} />
+        </Suspense>
+      )}
     </div>
   )
 }

@@ -1,4 +1,5 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
+import { useDialog } from '../hooks/useDialog'
 import {
   Bar,
   BarChart,
@@ -61,19 +62,7 @@ function StatsModal({ onClose }: StatsModalProps) {
   const breakdown = useMemo(() => getTaskBreakdown(sessions), [sessions])
   const maxTaskMinutes = Math.max(1, ...breakdown.map((item) => item.minutes))
   const hasSessions = sessions.length > 0
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
-    }
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    window.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.body.style.overflow = previousOverflow
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [onClose])
+  const dialog = useDialog({ open: true, onClose })
 
   return (
     <div
@@ -83,6 +72,7 @@ function StatsModal({ onClose }: StatsModalProps) {
       }}
     >
       <div
+        ref={dialog.ref}
         className="modal modal--wide"
         role="dialog"
         aria-modal="true"

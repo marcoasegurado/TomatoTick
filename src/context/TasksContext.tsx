@@ -28,6 +28,7 @@ interface TasksContextValue extends TaskState {
   deleteTask: (id: string) => void
   setActiveTask: (id: string | null) => void
   creditFocusSession: (minutes: number) => void
+  replaceTaskState: (next: TaskState) => void
 }
 
 const TasksContext = createContext<TasksContextValue | undefined>(undefined)
@@ -73,6 +74,10 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     setState((current) => creditFocusSessionInState(current, minutes))
   }, [])
 
+  const replaceTaskState = useCallback((next: TaskState) => {
+    setState(parseTaskState(JSON.stringify(next)))
+  }, [])
+
   const activeTask = useMemo(
     () =>
       state.tasks.find((task) => task.id === state.activeTaskId) ?? null,
@@ -88,6 +93,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       deleteTask,
       setActiveTask,
       creditFocusSession,
+      replaceTaskState,
     }),
     [
       state,
@@ -97,6 +103,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       deleteTask,
       setActiveTask,
       creditFocusSession,
+      replaceTaskState,
     ],
   )
 

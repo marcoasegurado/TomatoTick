@@ -41,6 +41,8 @@ backend.
 - **Browser notifications** when sessions end, where supported and permitted.
 - **Auto-start** for the next session.
 - **Keyboard shortcuts** for starting, resetting, and skipping sessions.
+- **Data backup** with JSON export and import, so local tasks, settings, and
+  session history can be moved or restored.
 - **Persistent browser storage** so the timer, settings, tasks, and session
   history survive page refreshes.
 - **Responsive interface** with accessible labels, live timer status, and
@@ -140,6 +142,11 @@ backend. The following data is stored in the browser's `localStorage`:
 Clearing the site's browser data resets the app and removes this local history.
 Browser notifications are optional and require permission from the browser.
 
+Use **Settings → Data** to download a JSON backup or restore one. Backups
+include your settings, tasks, and session history, but not the live timer
+state. Importing replaces the current data after confirmation, so export first
+if you want to keep it.
+
 ## Project structure
 
 ```text
@@ -167,8 +174,9 @@ npm test
 ```
 
 The suite covers timer behavior, settings validation, task operations, session
-statistics, time formatting, and the main application flow. GitHub Actions runs
-the tests and a production build on every push and pull request.
+statistics, time formatting, backup validation, dialog focus management, and the
+main application flow. GitHub Actions runs the tests and a production build on
+every push and pull request.
 
 ## Deploying to Cloudflare Pages
 

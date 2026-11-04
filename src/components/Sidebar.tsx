@@ -1,11 +1,15 @@
 import { useState, type FormEvent } from 'react'
 import { useTasks } from '../context/TasksContext'
+import { useDialog } from '../hooks/useDialog'
+import { useMediaQuery } from '../hooks/useMediaQuery'
 import { MAX_TASK_TITLE_LENGTH } from '../utils/tasks'
 
 interface SidebarProps {
   open: boolean
   onClose: () => void
 }
+
+const MOBILE_QUERY = '(max-width: 768px)'
 
 function Sidebar({ open, onClose }: SidebarProps) {
   const {
@@ -17,6 +21,9 @@ function Sidebar({ open, onClose }: SidebarProps) {
     setActiveTask,
   } = useTasks()
   const [title, setTitle] = useState('')
+  const isMobile = useMediaQuery(MOBILE_QUERY)
+  const drawerOpen = isMobile && open
+  const dialog = useDialog<HTMLElement>({ open: drawerOpen, onClose })
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault()
@@ -35,8 +42,12 @@ function Sidebar({ open, onClose }: SidebarProps) {
         aria-hidden="true"
       />
       <aside
+        ref={dialog.ref}
+        id="tasks-sidebar"
         className={open ? 'sidebar sidebar--open' : 'sidebar'}
         aria-label="Tasks"
+        aria-hidden={isMobile && !open ? true : undefined}
+        inert={isMobile && !open ? true : undefined}
       >
         <div className="sidebar__header">
           <h2 className="sidebar__title">Tasks</h2>

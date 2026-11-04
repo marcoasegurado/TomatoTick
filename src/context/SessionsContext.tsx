@@ -25,6 +25,7 @@ export interface NewSession {
 interface SessionsContextValue {
   sessions: FocusSession[]
   recordFocusSession: (session: NewSession) => void
+  replaceSessions: (sessions: FocusSession[]) => void
 }
 
 const SessionsContext = createContext<SessionsContextValue | undefined>(
@@ -56,9 +57,13 @@ export function SessionsProvider({ children }: { children: ReactNode }) {
     )
   }, [])
 
+  const replaceSessions = useCallback((next: FocusSession[]) => {
+    setSessions(parseSessions(JSON.stringify(next)))
+  }, [])
+
   const value = useMemo(
-    () => ({ sessions, recordFocusSession }),
-    [sessions, recordFocusSession],
+    () => ({ sessions, recordFocusSession, replaceSessions }),
+    [sessions, recordFocusSession, replaceSessions],
   )
 
   return (
