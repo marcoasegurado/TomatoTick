@@ -9,8 +9,8 @@
 
 TomatoTick is a browser-based Pomodoro timer that combines configurable focus
 and break sessions with task tracking, session history, and lightweight
-productivity stats. It runs entirely in your browser, needs no account, and
-works offline after the first load.
+productivity stats. It runs entirely in your browser and needs no account or
+backend.
 
 ## Screenshots
 
