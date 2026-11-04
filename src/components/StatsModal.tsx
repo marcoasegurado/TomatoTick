@@ -145,7 +145,7 @@ function StatsModal({ onClose }: StatsModalProps) {
                   <ResponsiveContainer width="100%" height={220}>
                     <BarChart
                       data={daily}
-                      margin={{ top: 8, right: 8, left: -18, bottom: 0 }}
+                      margin={{ top: 8, right: 8, left: 0, bottom: 0 }}
                     >
                       <CartesianGrid
                         strokeDasharray="3 3"
