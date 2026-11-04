@@ -151,7 +151,7 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
   - Production branch: `main`
 - [x] Make sure `npm run build` succeeds from a clean install and produces a working `dist/` folder.
 - [x] Add a short "Deploying to Cloudflare Pages" section to the README with the settings above.
-- [ ] After the owner deploys, confirm the live site works (assets load, timer runs, localStorage persists, no console errors).
+- [x] After the owner deploys, confirm the live site works (assets load, timer runs, localStorage persists, no console errors).
 
 **Done when:** CI passes on every push, a clean build works, and a push to `main` publishes the live demo on Cloudflare Pages.
 
