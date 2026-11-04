@@ -143,14 +143,14 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 **Goal:** A reliable, deployed project.
 
-- [ ] Review and fill gaps in unit tests (timer, settings, tasks, stats).
-- [ ] Add a GitHub Actions workflow that runs install, lint (if configured), tests, and build on every push and pull request.
-- [ ] Prepare the project for Cloudflare Pages. Do not add a GitHub Pages workflow. The deployment itself is set up by the owner in the Cloudflare dashboard (Workers & Pages, create a Pages project, connect the GitHub repo) with these build settings:
+- [x] Review and fill gaps in unit tests (timer, settings, tasks, stats).
+- [x] Add a GitHub Actions workflow that runs install, lint (if configured), tests, and build on every push and pull request.
+- [x] Prepare the project for Cloudflare Pages. Do not add a GitHub Pages workflow. The deployment itself is set up by the owner in the Cloudflare dashboard (Workers & Pages, create a Pages project, connect the GitHub repo) with these build settings:
   - Framework preset: Vite (or build command `npm run build`)
   - Build output directory: `dist`
   - Production branch: `main`
-- [ ] Make sure `npm run build` succeeds from a clean install and produces a working `dist/` folder.
-- [ ] Add a short "Deploying to Cloudflare Pages" section to the README with the settings above.
+- [x] Make sure `npm run build` succeeds from a clean install and produces a working `dist/` folder.
+- [x] Add a short "Deploying to Cloudflare Pages" section to the README with the settings above.
 - [ ] After the owner deploys, confirm the live site works (assets load, timer runs, localStorage persists, no console errors).
 
 **Done when:** CI passes on every push, a clean build works, and a push to `main` publishes the live demo on Cloudflare Pages.

@@ -2,9 +2,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Served from https://<user>.github.io/TomatoTick/ on GitHub Pages.
+// Served from the site root on Cloudflare Pages.
 export default defineConfig({
-  base: '/TomatoTick/',
+  base: '/',
   plugins: [react()],
   test: {
     environment: 'jsdom',

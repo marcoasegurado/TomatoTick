@@ -74,6 +74,27 @@ To preview the production build locally:
 npm run preview
 ```
 
+## Deploying to Cloudflare Pages
+
+TomatoTick is a static single-page app, so it deploys to Cloudflare Pages with
+no server-side configuration. The deployment is set up in the Cloudflare
+dashboard:
+
+1. Go to **Workers & Pages** and create a **Pages** project.
+2. Connect the GitHub repository for this project.
+3. Use these build settings:
+
+| Setting | Value |
+| --- | --- |
+| Framework preset | Vite |
+| Build command | `npm run build` |
+| Build output directory | `dist` |
+| Production branch | `main` |
+
+Every push to `main` publishes the live site, and Cloudflare creates preview
+deployments for other branches. The Vite `base` option stays at `/` because
+Cloudflare Pages serves the app from the site root.
+
 ## Available scripts
 
 | Command | Description |
