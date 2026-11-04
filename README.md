@@ -45,6 +45,10 @@ backend.
   session history can be moved or restored.
 - **Persistent browser storage** so the timer, settings, tasks, and session
   history survive page refreshes.
+- **Installable PWA** with a web app manifest and install button on supported
+  browsers.
+- **Offline support** through a service worker that caches the app shell and
+  assets after the first visit.
 - **Responsive interface** with accessible labels, live timer status, and
   keyboard-friendly controls.
 
@@ -53,6 +57,7 @@ backend.
 - React 19 with TypeScript
 - Vite
 - Recharts
+- Web App Manifest and service worker for PWA/offline support
 - Vitest and Testing Library
 - GitHub Actions for CI
 - Cloudflare for hosting
@@ -129,6 +134,17 @@ break.
 Shortcuts are ignored while you are typing in an input. They are also listed in
 the Settings modal.
 
+## Install and offline use
+
+On browsers that support installing web apps, an **Install** button appears in
+the header when the app is installable. Installed copies open in their own
+window and use the same local data as the browser tab.
+
+After the first successful visit, a service worker caches the app shell and
+Vite assets. TomatoTick then opens from the cache when you are offline, and the
+timer, tasks, settings, and stats continue to work from `localStorage`. Clearing
+site data or disabling the service worker removes the offline cache.
+
 ## Data and privacy
 
 TomatoTick is a client-side application. It does not require an account or a
@@ -152,13 +168,18 @@ if you want to keep it.
 ```text
 docs/
 └── screenshots/  Screenshots used in this README
+public/
+├── icons/        Installable PWA icons
+├── favicon.svg   Browser favicon
+├── manifest.webmanifest  Web app manifest
+└── sw.js         Offline service worker
 src/
 ├── components/   UI components for the timer, tasks, settings, and stats
 ├── context/      React context providers for settings, tasks, and sessions
-├── hooks/        Timer and keyboard-shortcut hooks
-├── utils/        Timer, storage, formatting, alert, and statistics logic
+├── hooks/        Timer, keyboard-shortcut, and install-prompt hooks
+├── utils/        Timer, storage, formatting, alert, PWA, theme, and stats logic
 ├── App.tsx       Application shell and modal state
-└── main.tsx      React entry point and provider setup
+└── main.tsx      React entry point, theme setup, and service-worker registration
 ```
 
 The timer and data transformations are kept in `src/utils/` so they can be
@@ -174,9 +195,9 @@ npm test
 ```
 
 The suite covers timer behavior, settings validation, task operations, session
-statistics, time formatting, backup validation, dialog focus management, and the
-main application flow. GitHub Actions runs the tests and a production build on
-every push and pull request.
+statistics, time formatting, backup validation, PWA helper behavior, dialog
+focus management, and the main application flow. GitHub Actions runs the tests
+and a production build on every push and pull request.
 
 ## Deploying to Cloudflare Pages
 
@@ -203,19 +224,13 @@ Cloudflare Pages serves the app from the site root.
 
 The roadmap for TomatoTick includes:
 
-- **Installable PWA support** so the app can be installed and used more like a
-  native desktop or mobile app.
-- **Offline-first improvements** for reliable use without an internet
-  connection.
 - **More notification options**, including additional sounds and improved
   background reminders.
 - **Richer task management**, such as task editing, tags, priorities, and
   optional task estimates.
 - **Expanded analytics**, including custom date ranges, exportable reports, and
   additional productivity trends.
-- **Data export and import** so users can back up or move their local tasks,
-  settings, and session history.
-- **Theme customization**, including dark mode and additional color themes.
+- **Additional color themes** beyond the current light and dark modes.
 - **Accessibility and mobile refinements** based on continued testing across
   browsers, screen readers, and small screens.
 - **Optional synchronization** for users who want their data available across

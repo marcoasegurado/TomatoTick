@@ -192,8 +192,24 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 ---
 
+## Phase 10: Installable PWA and offline support
+
+**Goal:** Let people install TomatoTick like an app and keep using it offline.
+
+- [x] Add a web app manifest with app name, theme colors, display mode, and scope.
+- [x] Add 192px, 512px, and Apple touch icons for install surfaces.
+- [x] Register a service worker in production builds only, without affecting development.
+- [x] Precache the app shell and runtime-cache hashed Vite assets for offline use.
+- [x] Add an in-app install button that appears when the browser offers an install prompt.
+- [x] Keep offline navigation working by falling back to the cached app shell.
+- [x] Add tests for the PWA helpers.
+- [x] Document installation and offline behavior in the README.
+
+**Done when:** The app can be installed from a supported browser, loads from cache after the first visit, and the production build passes tests and CI.
+
+---
+
 ## Out of scope (for now)
 
 - Backend, accounts, or cloud sync
-- Installable PWA / offline mode
 - Task categories or tags

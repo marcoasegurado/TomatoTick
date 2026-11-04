@@ -1,4 +1,5 @@
-import { BarChart3, Menu, Settings } from 'lucide-react'
+import { BarChart3, Download, Menu, Settings } from 'lucide-react'
+import { useInstallPrompt } from '../hooks/useInstallPrompt'
 
 interface HeaderProps {
   onOpenSettings: () => void
@@ -13,6 +14,8 @@ function Header({
   onOpenStats,
   tasksOpen,
 }: HeaderProps) {
+  const { canInstall, promptInstall } = useInstallPrompt()
+
   return (
     <header className="header">
       <div className="header__brand">
@@ -39,6 +42,18 @@ function Header({
           <Menu size={18} aria-hidden="true" />
           <span className="header__action-label">Tasks</span>
         </button>
+        {canInstall && (
+          <button
+            type="button"
+            className="header__action header__install"
+            onClick={() => void promptInstall()}
+            aria-label="Install app"
+            title="Install TomatoTick"
+          >
+            <Download size={18} aria-hidden="true" />
+            <span className="header__action-label">Install</span>
+          </button>
+        )}
         <button
           type="button"
           className="header__action"

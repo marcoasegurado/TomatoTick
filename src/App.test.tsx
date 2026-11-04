@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen } from '@testing-library/react'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 import { SettingsProvider } from './context/SettingsContext'
@@ -55,6 +61,37 @@ describe('App shell', () => {
     expect(screen.getByText('TomatoTick')).toBeInTheDocument()
     expect(screen.getByText('25:00')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Start timer' })).toBeInTheDocument()
+  })
+
+  it('shows the install button when the browser offers a prompt', async () => {
+    const prompt = vi.fn().mockResolvedValue(undefined)
+    const installEvent = new Event('beforeinstallprompt', {
+      cancelable: true,
+    }) as Event & {
+      prompt: () => Promise<void>
+      userChoice: Promise<{ outcome: 'accepted'; platform: string }>
+    }
+    Object.defineProperties(installEvent, {
+      prompt: { value: prompt },
+      userChoice: {
+        value: Promise.resolve({ outcome: 'accepted', platform: 'web' }),
+      },
+    })
+
+    renderApp()
+    act(() => {
+      window.dispatchEvent(installEvent)
+    })
+
+    fireEvent.click(
+      await screen.findByRole('button', { name: 'Install app' }),
+    )
+    expect(prompt).toHaveBeenCalledTimes(1)
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('button', { name: 'Install app' }),
+      ).not.toBeInTheDocument()
+    })
   })
 
   it('opens settings and blocks invalid durations', () => {
