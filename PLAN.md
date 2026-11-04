@@ -209,7 +209,24 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 ---
 
+## Phase 11: Richer task management
+
+**Goal:** Make the task list more useful for planning and organizing focus work.
+
+- [ ] Add inline task editing with validation and cancel support.
+- [ ] Add priorities (low, medium, high) with visible indicators and sorting.
+- [ ] Add optional tags per task with filtering and an empty tag state.
+- [ ] Add optional Pomodoro estimates per task and show completed vs. estimated progress.
+- [ ] Add task filters for all, active, and completed tasks.
+- [ ] Keep the selected focus task visible and consistent across edits, filters, and sorting.
+- [ ] Preserve existing tasks and backups with backwards-compatible defaults and validation.
+- [ ] Add tests for editing, priorities, tags, estimates, filtering, sorting, and migration.
+- [ ] Update the README for the expanded task workflow.
+
+**Done when:** Tasks can be edited and organized without losing existing data or backups, and the full test suite and production build pass.
+
+---
+
 ## Out of scope (for now)
 
 - Backend, accounts, or cloud sync
-- Task categories or tags
