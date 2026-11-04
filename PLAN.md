@@ -45,12 +45,12 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 **Goal:** A clean, running skeleton.
 
-- [ ] Scaffold a React + Vite project.
-- [ ] Set up a folder structure (`components/`, `hooks/`, `utils/`, `context/` or `store/`, `assets/`).
-- [ ] Add global styles and CSS variables for the three mode colors (focus, short break, long break).
-- [ ] Add Vitest and a sample passing test.
-- [ ] Add a `.gitignore`. Keep the Vite `base` option at `/` (the default), since Cloudflare Pages serves the site from the root.
-- [ ] Create a basic app shell: header, main timer area, empty sidebar.
+- [x] Scaffold a React + Vite project.
+- [x] Set up a folder structure (`components/`, `hooks/`, `utils/`, `context/` or `store/`, `assets/`).
+- [x] Add global styles and CSS variables for the three mode colors (focus, short break, long break).
+- [x] Add Vitest and a sample passing test.
+- [x] Add a `.gitignore`. Keep the Vite `base` option at `/` (the default), since Cloudflare Pages serves the site from the root.
+- [x] Create a basic app shell: header, main timer area, empty sidebar.
 
 **Done when:** `npm run dev`, `npm run build`, and `npm test` all work.
 
@@ -60,15 +60,15 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 **Goal:** A reliable, accurate Pomodoro timer.
 
-- [ ] Timer display with a progress ring and large time text.
-- [ ] Mode switcher: Focus, Short Break, Long Break.
-- [ ] Start, pause, reset, and skip controls.
-- [ ] Timestamp-based countdown logic in a custom hook (store the target end time and compute the remaining time on each tick).
-- [ ] Automatic cycle: after every 4 focus sessions, a long break; otherwise a short break.
-- [ ] Session counter showing progress through the current cycle.
-- [ ] Persist running state in localStorage so the timer survives a refresh or closed tab.
-- [ ] Show the live remaining time in `document.title`.
-- [ ] Unit tests for the timer logic (countdown math, mode transitions, resume after reload).
+- [x] Timer display with a progress ring and large time text.
+- [x] Mode switcher: Focus, Short Break, Long Break.
+- [x] Start, pause, reset, and skip controls.
+- [x] Timestamp-based countdown logic in a custom hook (store the target end time and compute the remaining time on each tick).
+- [x] Automatic cycle: after every 4 focus sessions, a long break; otherwise a short break.
+- [x] Session counter showing progress through the current cycle.
+- [x] Persist running state in localStorage so the timer survives a refresh or closed tab.
+- [x] Show the live remaining time in `document.title`.
+- [x] Unit tests for the timer logic (countdown math, mode transitions, resume after reload).
 
 **Done when:** The timer stays accurate when the tab is in the background, and reloading mid-session continues correctly.
 
@@ -78,13 +78,13 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 **Goal:** Customizable durations and session-end notifications.
 
-- [ ] Settings modal with adjustable focus, short break, and long break lengths, and the long-break interval.
-- [ ] Persist settings in localStorage.
-- [ ] Sound alert when a session ends, with a choice of at least 3 sounds and a volume slider.
-- [ ] Browser notification when a session ends (ask for permission gracefully, and handle denial).
-- [ ] Auto-start next session toggle (on/off).
-- [ ] Preview button to test the selected sound.
-- [ ] Unit tests for settings validation (e.g. no zero or negative durations).
+- [x] Settings modal with adjustable focus, short break, and long break lengths, and the long-break interval.
+- [x] Persist settings in localStorage.
+- [x] Sound alert when a session ends, with a choice of at least 3 sounds and a volume slider.
+- [x] Browser notification when a session ends (ask for permission gracefully, and handle denial).
+- [x] Auto-start next session toggle (on/off).
+- [x] Preview button to test the selected sound.
+- [x] Unit tests for settings validation (e.g. no zero or negative durations).
 
 **Done when:** Changing settings takes effect immediately and survives a refresh, and all alerts work.
 
@@ -94,13 +94,13 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 **Goal:** A simple task list connected to the timer.
 
-- [ ] Sidebar task list (becomes a slide-in drawer on mobile).
-- [ ] Add, complete (toggle), and delete tasks.
-- [ ] Select one task as the "current focus", displayed under the timer.
-- [ ] Each completed focus session is credited to the current task (session count and focus minutes).
-- [ ] Persist tasks in localStorage.
-- [ ] Empty state message when there are no tasks.
-- [ ] Unit tests for task state logic.
+- [x] Sidebar task list (becomes a slide-in drawer on mobile).
+- [x] Add, complete (toggle), and delete tasks.
+- [x] Select one task as the "current focus", displayed under the timer.
+- [x] Each completed focus session is credited to the current task (session count and focus minutes).
+- [x] Persist tasks in localStorage.
+- [x] Empty state message when there are no tasks.
+- [x] Unit tests for task state logic.
 
 **Done when:** Tasks persist, and finishing a focus session updates the selected task's totals.
 
@@ -110,15 +110,15 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 **Goal:** Meaningful productivity stats in a modal.
 
-- [ ] Record every completed focus session (date, duration, task id) in localStorage.
-- [ ] Stats modal with these sections:
-  - [ ] Summary cards: sessions and focus time for today and all-time.
-  - [ ] Bar chart of focus minutes per day (last 7 days).
-  - [ ] Current streak and longest streak.
-  - [ ] GitHub-style calendar heatmap of focus activity.
-  - [ ] Per-task breakdown (focus time per task).
-- [ ] Handle empty states (no sessions yet) without errors.
-- [ ] Unit tests for stats calculations (totals, streaks, grouping by day and task).
+- [x] Record every completed focus session (date, duration, task id) in localStorage.
+- [x] Stats modal with these sections:
+  - [x] Summary cards: sessions and focus time for today and all-time.
+  - [x] Bar chart of focus minutes per day (last 7 days).
+  - [x] Current streak and longest streak.
+  - [x] GitHub-style calendar heatmap of focus activity.
+  - [x] Per-task breakdown (focus time per task).
+- [x] Handle empty states (no sessions yet) without errors.
+- [x] Unit tests for stats calculations (totals, streaks, grouping by day and task).
 
 **Done when:** Stats are correct against sample data, and the modal looks good with both empty and populated data.
 
@@ -128,12 +128,12 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 **Goal:** Polish the look and the usability.
 
-- [ ] Apply the playful tomato theme: rounded shapes, friendly typography, mode-based color changes with smooth transitions.
-- [ ] Make the layout fully responsive (phone, tablet, desktop), with sidebar to drawer on small screens.
-- [ ] Keyboard shortcuts: `Space` start/pause, `R` reset, `S` skip. Ignore shortcuts while typing in an input.
-- [ ] Show a small shortcuts hint somewhere discoverable (e.g. in settings).
-- [ ] Basic accessibility: labeled buttons, focus states, sufficient contrast, `aria-live` for timer changes where reasonable.
-- [ ] Test at 360px, 768px, and 1280px widths.
+- [x] Apply the playful tomato theme: rounded shapes, friendly typography, mode-based color changes with smooth transitions.
+- [x] Make the layout fully responsive (phone, tablet, desktop), with sidebar to drawer on small screens.
+- [x] Keyboard shortcuts: `Space` start/pause, `R` reset, `S` skip. Ignore shortcuts while typing in an input.
+- [x] Show a small shortcuts hint somewhere discoverable (e.g. in settings).
+- [x] Basic accessibility: labeled buttons, focus states, sufficient contrast, `aria-live` for timer changes where reasonable.
+- [x] Test at 360px, 768px, and 1280px widths.
 
 **Done when:** The app looks and works well on all three widths and every feature is reachable by mouse, touch, and keyboard.
 
