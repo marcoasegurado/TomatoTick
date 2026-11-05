@@ -7,23 +7,29 @@ repository. Follow it after finishing any implementation work.
 
 After a phase or prompt is finished:
 
-1. Run the full test suite and production build.
-2. Ask the user for explicit permission before pushing to GitHub or deploying.
-3. Only after approval, commit and push to `main`.
-4. Cloudflare deploys automatically from `main`.
-5. Verify the live site and record the result in the deployment log below.
-6. Write a short summary of what changed in the app for that deployment.
+1. Check which files changed.
+2. Ask the user for explicit permission before running tests or a build.
+3. If the only changes are Markdown or documentation files, skip tests and the
+   build unless the user explicitly asks for them.
+4. After tests and build pass, ask for separate permission to push to GitHub
+   and deploy.
+5. Only after approval, commit and push to `main`.
+6. Cloudflare deploys automatically from `main`.
+7. Verify the live site and record the result in the deployment log below.
+8. Write a short summary of what changed in the app for that deployment.
 
-Never push or deploy without the user's explicit approval.
+Never run tests, push, or deploy without the user's explicit approval.
 
 ## Checklist
+
+Ask the user before running:
 
 ```bash
 npm test
 npm run build
 ```
 
-Ask the user:
+After tests and build pass, ask the user:
 
 > Tests and build pass. May I push these changes to GitHub `main` and update
 > the Cloudflare deployment?
