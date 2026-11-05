@@ -247,13 +247,13 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 **Goal:** Add Sunset, Forest, and Midnight themes alongside light, dark, and system.
 
-- [ ] Expand the theme model to System, Light, Dark, Sunset, Forest, and Midnight.
-- [ ] Migrate existing light/dark preferences and follow OS changes while set to System.
-- [ ] Replace the Dark mode toggle with a theme picker that previews each theme immediately.
-- [ ] Refactor theme tokens so each theme defines its surfaces, text, borders, focus rings, and mode accents.
-- [ ] Check timer modes, task badges, modals, charts, heatmap, drawer, and disabled controls in every theme.
-- [ ] Add tests for theme resolution, persistence, migration, and switching.
-- [ ] Update the README with the available themes.
+- [x] Expand the theme model to System, Light, Dark, Sunset, Forest, and Midnight.
+- [x] Migrate existing light/dark preferences and follow OS changes while set to System.
+- [x] Replace the Dark mode toggle with a theme picker that previews each theme immediately.
+- [x] Refactor theme tokens so each theme defines its surfaces, text, borders, focus rings, and mode accents.
+- [x] Check timer modes, task badges, modals, charts, heatmap, drawer, and disabled controls in every theme.
+- [x] Add tests for theme resolution, persistence, migration, and switching.
+- [x] Update the README with the available themes.
 
 **Done when:** All themes persist correctly, existing preferences migrate safely, every theme is readable and consistent, and the full test suite and production build pass.
 

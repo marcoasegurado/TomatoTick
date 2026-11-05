@@ -33,9 +33,10 @@ import {
   type SettingsField,
 } from '../utils/settings'
 import {
+  THEME_OPTIONS,
   applyTheme,
+  getStoredTheme,
   persistTheme,
-  resolveTheme,
   type Theme,
 } from '../utils/theme'
 
@@ -59,7 +60,9 @@ function SettingsModal({ onClose }: SettingsModalProps) {
   const { sessions, replaceSessions } = useSessions()
   const [draft, setDraft] = useState<Settings>(settings)
   const [errors, setErrors] = useState<SettingsErrors>({})
-  const [theme, setTheme] = useState<Theme>(() => resolveTheme())
+  const [theme, setTheme] = useState<Theme>(
+    () => getStoredTheme() ?? 'system',
+  )
   const [permission, setPermission] = useState<NotificationSupport>(() =>
     getNotificationSupport(),
   )
@@ -99,8 +102,7 @@ function SettingsModal({ onClose }: SettingsModalProps) {
     })
   }
 
-  const handleTheme = (dark: boolean) => {
-    const next: Theme = dark ? 'dark' : 'light'
+  const handleTheme = (next: Theme) => {
     setTheme(next)
     applyTheme(next)
     persistTheme(next)
@@ -489,22 +491,41 @@ function SettingsModal({ onClose }: SettingsModalProps) {
 
             <fieldset className="settings-group">
               <legend className="settings-group__legend">Appearance</legend>
-              <label className="settings-toggle">
-                <span className="settings-toggle__text">
-                  <span className="settings-toggle__title">Dark mode</span>
-                  <span className="settings-toggle__hint">
-                    Saved on this device. Follows your system setting until you
-                    choose.
-                  </span>
-                </span>
-                <input
-                  type="checkbox"
-                  className="settings-toggle__input"
-                  checked={theme === 'dark'}
-                  onChange={(event) => handleTheme(event.target.checked)}
-                />
-                <span className="settings-toggle__switch" aria-hidden="true" />
-              </label>
+              <div
+                className="theme-grid"
+                role="radiogroup"
+                aria-label="Theme"
+              >
+                {THEME_OPTIONS.map((option) => (
+                  <label
+                    key={option.id}
+                    className={
+                      theme === option.id
+                        ? 'theme-option theme-option--active'
+                        : 'theme-option'
+                    }
+                  >
+                    <input
+                      type="radio"
+                      className="theme-option__input"
+                      name="settings-theme"
+                      value={option.id}
+                      checked={theme === option.id}
+                      onChange={() => handleTheme(option.id)}
+                    />
+                    <span
+                      className={`theme-option__swatch theme-option__swatch--${option.id}`}
+                      aria-hidden="true"
+                    />
+                    <span className="theme-option__label">
+                      {option.label}
+                    </span>
+                  </label>
+                ))}
+              </div>
+              <p className="settings-hint">
+                Saved on this device. System follows your device appearance.
+              </p>
             </fieldset>
 
             <fieldset className="settings-group">

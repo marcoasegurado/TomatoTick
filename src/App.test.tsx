@@ -15,6 +15,7 @@ import { createBackup, serializeBackup } from './utils/backup'
 import { DEFAULT_SETTINGS, SETTINGS_STORAGE_KEY } from './utils/settings'
 import { SESSIONS_STORAGE_KEY } from './utils/sessions'
 import { TASKS_STORAGE_KEY } from './utils/tasks'
+import { THEME_STORAGE_KEY } from './utils/theme'
 import { TIMER_STORAGE_KEY } from './utils/timer'
 
 function renderApp() {
@@ -129,6 +130,20 @@ describe('App shell', () => {
     )
     expect(saved.focus).toBe(30)
     expect(localStorage.getItem(TIMER_STORAGE_KEY)).not.toBeNull()
+  })
+
+  it('switches themes from settings and persists the choice', () => {
+    renderApp()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open settings' }))
+
+    fireEvent.click(screen.getByRole('radio', { name: 'Forest' }))
+    expect(document.documentElement.dataset.theme).toBe('forest')
+    expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('forest')
+
+    fireEvent.click(screen.getByRole('radio', { name: 'Midnight' }))
+    expect(document.documentElement.dataset.theme).toBe('midnight')
+    expect(localStorage.getItem(THEME_STORAGE_KEY)).toBe('midnight')
   })
 
   it('sends a test notification from settings', async () => {

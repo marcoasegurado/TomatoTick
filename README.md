@@ -59,6 +59,8 @@ backend.
   assets after the first visit.
 - **Responsive interface** with accessible labels, live timer status, and
   keyboard-friendly controls.
+- **Six appearance choices**: System, Light, Dark, Sunset, Forest, and Midnight,
+  with System following your device appearance.
 
 ## Tech stack
 
@@ -124,8 +126,8 @@ npm run preview
    session estimate. Use the filter buttons and tag selector to focus on the
    tasks you want to see; the selected focus task stays pinned when a filter
    hides it.
-4. Use **Settings** to adjust timer durations, break intervals, alerts, and
-   auto-start behavior.
+4. Use **Settings** to adjust timer durations, break intervals, alerts,
+   auto-start behavior, and the app theme.
 5. When a focus session completes, TomatoTick records it in your history and
    credits the selected task.
 6. Open **Stats** to review your focus time, streaks, activity, and task
@@ -210,9 +212,10 @@ npm test
 
 The suite covers timer behavior, settings validation, task editing,
 priorities, tags, estimates, filtering, sorting, backups and migration, session
-statistics, time formatting, PWA helper behavior, notification fallbacks, dialog
-focus management, and the main application flow. GitHub Actions runs the tests
-and a production build on every push and pull request.
+statistics, time formatting, PWA helper behavior, notification fallbacks, theme
+resolution and switching, dialog focus management, and the main application
+flow. GitHub Actions runs the tests and a production build on every push and
+pull request.
 
 ## Deploying to Cloudflare Pages
 
@@ -241,7 +244,6 @@ The roadmap for TomatoTick includes:
 
 - **Expanded analytics**, including custom date ranges, exportable reports, and
   additional productivity trends.
-- **Additional color themes** beyond the current light and dark modes.
 - **Accessibility and mobile refinements** based on continued testing across
   browsers, screen readers, and small screens.
 - **Optional synchronization** for users who want their data available across

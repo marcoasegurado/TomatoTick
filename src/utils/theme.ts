@@ -1,9 +1,31 @@
 export const THEME_STORAGE_KEY = 'tomatotick:theme'
 
-export type Theme = 'light' | 'dark'
+export type Theme =
+  | 'system'
+  | 'light'
+  | 'dark'
+  | 'sunset'
+  | 'forest'
+  | 'midnight'
+
+export type ResolvedTheme = Exclude<Theme, 'system'>
+
+export const THEME_OPTIONS: ReadonlyArray<{
+  id: Theme
+  label: string
+}> = [
+  { id: 'system', label: 'System' },
+  { id: 'light', label: 'Light' },
+  { id: 'dark', label: 'Dark' },
+  { id: 'sunset', label: 'Sunset' },
+  { id: 'forest', label: 'Forest' },
+  { id: 'midnight', label: 'Midnight' },
+]
+
+const THEMES = new Set<Theme>(THEME_OPTIONS.map((option) => option.id))
 
 function isTheme(value: unknown): value is Theme {
-  return value === 'light' || value === 'dark'
+  return typeof value === 'string' && THEMES.has(value as Theme)
 }
 
 export function getStoredTheme(): Theme | null {
@@ -15,7 +37,7 @@ export function getStoredTheme(): Theme | null {
   }
 }
 
-export function getSystemTheme(): Theme {
+export function getSystemTheme(): ResolvedTheme {
   if (
     typeof window !== 'undefined' &&
     typeof window.matchMedia === 'function' &&
@@ -26,13 +48,17 @@ export function getSystemTheme(): Theme {
   return 'light'
 }
 
-/** The theme in effect: an explicit choice, or the OS preference. */
-export function resolveTheme(): Theme {
-  return getStoredTheme() ?? getSystemTheme()
+/** The theme actually painted: System resolves to the OS preference. */
+export function resolveTheme(
+  preference: Theme = getStoredTheme() ?? 'system',
+): ResolvedTheme {
+  return preference === 'system' ? getSystemTheme() : preference
 }
 
-export function applyTheme(theme: Theme): void {
-  document.documentElement.dataset.theme = theme
+export function applyTheme(theme: Theme): ResolvedTheme {
+  const resolved = resolveTheme(theme)
+  document.documentElement.dataset.theme = resolved
+  return resolved
 }
 
 export function persistTheme(theme: Theme): void {
@@ -43,8 +69,32 @@ export function persistTheme(theme: Theme): void {
   }
 }
 
-/** Apply a saved theme before the first paint; otherwise follow the OS. */
+/** Apply the saved theme before the first paint; System follows the OS. */
 export function initTheme(): void {
-  const stored = getStoredTheme()
-  if (stored) applyTheme(stored)
+  applyTheme(getStoredTheme() ?? 'system')
+}
+
+/**
+ * Repaint when the OS appearance changes, but only while System is selected.
+ * Returns a cleanup function.
+ */
+export function watchSystemTheme(): () => void {
+  if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+    return () => {}
+  }
+
+  const query = window.matchMedia('(prefers-color-scheme: dark)')
+  const handleChange = () => {
+    if ((getStoredTheme() ?? 'system') === 'system') {
+      applyTheme('system')
+    }
+  }
+
+  if (typeof query.addEventListener === 'function') {
+    query.addEventListener('change', handleChange)
+    return () => query.removeEventListener('change', handleChange)
+  }
+
+  query.addListener(handleChange)
+  return () => query.removeListener(handleChange)
 }

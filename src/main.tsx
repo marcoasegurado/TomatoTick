@@ -5,10 +5,11 @@ import { SettingsProvider } from './context/SettingsContext'
 import { SessionsProvider } from './context/SessionsContext'
 import { TasksProvider } from './context/TasksContext'
 import { registerServiceWorker } from './utils/pwa'
-import { initTheme } from './utils/theme'
+import { initTheme, watchSystemTheme } from './utils/theme'
 import './index.css'
 
 initTheme()
+watchSystemTheme()
 registerServiceWorker()
 
 createRoot(document.getElementById('root')!).render(

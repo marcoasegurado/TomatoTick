@@ -68,3 +68,4 @@ After Cloudflare finishes deploying:
 | --- | --- | --- | --- | --- | --- |
 | 2026-11-05 | Phase 11: richer task management | `90cd0a2` | Yes | Yes | Added inline task editing, priorities with sorting, tags and tag filtering, session estimates with progress, all/active/completed filters, pinned current focus, and backwards-compatible task and backup migration. Updated the README and test suite. |
 | 2026-11-05 | Phase 12: notification and alert improvements | `ba9cd1e` | Yes | Yes | Added Marimba and Digital alert sounds, service-worker notifications with a Notification fallback, notification click handling, a Test notification button with permission feedback, and new alert tests. Updated the README. |
+| 2026-11-05 | Phase 13: additional themes | Pending | No | No | Added System, Light, Dark, Sunset, Forest, and Midnight themes, a theme picker with previews, OS-following System mode, per-theme palettes, and theme tests. Updated the README. |
