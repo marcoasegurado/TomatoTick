@@ -4,6 +4,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
@@ -148,6 +149,112 @@ describe('App shell', () => {
     expect(saved.tasks[0].title).toBe('Write tests')
   })
 
+  it('edits a task inline with priority, tags, and an estimate', () => {
+    renderApp()
+
+    fireEvent.change(screen.getByLabelText('New task'), {
+      target: { value: 'Write tests' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit "Write tests"' }))
+
+    fireEvent.change(screen.getByLabelText('Task title'), {
+      target: { value: 'Write better tests' },
+    })
+    fireEvent.change(screen.getByLabelText('Priority'), {
+      target: { value: 'high' },
+    })
+    fireEvent.change(screen.getByLabelText('Estimate'), {
+      target: { value: '3' },
+    })
+    fireEvent.change(screen.getByLabelText('Tags'), {
+      target: { value: 'work, focus' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+
+    const sidebar = screen.getByRole('complementary', { name: 'Tasks' })
+    expect(within(sidebar).getByText('Write better tests')).toBeInTheDocument()
+    expect(within(sidebar).getByText('High')).toBeInTheDocument()
+    expect(within(sidebar).getAllByText('work').length).toBeGreaterThan(0)
+    expect(within(sidebar).getAllByText('focus').length).toBeGreaterThan(0)
+    expect(within(sidebar).getByText('0 / 3 sessions')).toBeInTheDocument()
+
+    const saved = JSON.parse(
+      localStorage.getItem(TASKS_STORAGE_KEY) ?? '{}',
+    )
+    expect(saved.tasks[0]).toMatchObject({
+      title: 'Write better tests',
+      priority: 'high',
+      tags: ['work', 'focus'],
+      estimatedSessions: 3,
+    })
+  })
+
+  it('cancels task editing and validates blank titles', () => {
+    renderApp()
+
+    fireEvent.change(screen.getByLabelText('New task'), {
+      target: { value: 'Write tests' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit "Write tests"' }))
+    fireEvent.change(screen.getByLabelText('Task title'), {
+      target: { value: '   ' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+    expect(
+      screen.getByText('Task title cannot be empty.'),
+    ).toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText('Task title'), {
+      target: { value: 'Discard me' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+
+    const sidebar = screen.getByRole('complementary', { name: 'Tasks' })
+    expect(within(sidebar).getByText('Write tests')).toBeInTheDocument()
+    expect(within(sidebar).queryByText('Discard me')).not.toBeInTheDocument()
+  })
+
+  it('filters tasks by status and tag', () => {
+    renderApp()
+
+    fireEvent.change(screen.getByLabelText('New task'), {
+      target: { value: 'Write tests' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+    fireEvent.change(screen.getByLabelText('New task'), {
+      target: { value: 'Review PR' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: 'Add' }))
+
+    fireEvent.click(
+      screen.getByRole('checkbox', { name: 'Mark "Review PR" as complete' }),
+    )
+
+    const sidebar = screen.getByRole('complementary', { name: 'Tasks' })
+
+    fireEvent.click(within(sidebar).getByRole('button', { name: 'Completed' }))
+    expect(within(sidebar).getByText('Review PR')).toBeInTheDocument()
+    const pinned = within(sidebar).getByRole('region', {
+      name: 'Current focus',
+    })
+    expect(within(pinned).getByText('Write tests')).toBeInTheDocument()
+
+    fireEvent.click(within(sidebar).getByRole('button', { name: 'Active' }))
+    expect(within(sidebar).getByText('Write tests')).toBeInTheDocument()
+    expect(
+      within(sidebar).queryByRole('region', { name: 'Current focus' }),
+    ).not.toBeInTheDocument()
+    expect(within(sidebar).queryByText('Review PR')).not.toBeInTheDocument()
+
+    fireEvent.click(within(sidebar).getByRole('button', { name: 'All' }))
+    expect(within(sidebar).getByText('Write tests')).toBeInTheDocument()
+    expect(within(sidebar).getByText('Review PR')).toBeInTheDocument()
+  })
+
   it('starts and pauses with the Space shortcut, ignoring inputs', () => {
     renderApp()
 
@@ -254,6 +361,9 @@ describe('App shell', () => {
             createdAt: now,
             focusSessions: 1,
             focusMinutes: 25,
+            priority: 'medium',
+            tags: [],
+            estimatedSessions: 0,
           },
         ],
         activeTaskId: 'imported-1',

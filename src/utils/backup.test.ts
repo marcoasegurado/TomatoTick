@@ -24,6 +24,9 @@ const tasks: TaskState = {
       createdAt: now - 60_000,
       focusSessions: 1,
       focusMinutes: 25,
+      priority: 'high',
+      tags: ['Work'],
+      estimatedSessions: 4,
     },
   ],
   activeTaskId: 'task-1',
@@ -124,6 +127,26 @@ describe('backup', () => {
 
     const result = roundTrip(JSON.stringify(raw))
     expect(result.backup.data.tasks.activeTaskId).toBeNull()
+  })
+
+  it('fills in task defaults for backups made before phase 11', () => {
+    const raw = JSON.parse(
+      serializeBackup(createBackup(settings, tasks, sessions, now)),
+    )
+    for (const task of raw.data.tasks.tasks) {
+      delete task.priority
+      delete task.tags
+      delete task.estimatedSessions
+    }
+
+    const result = roundTrip(JSON.stringify(raw))
+    expect(result.warnings).toEqual([])
+    expect(result.backup.data.tasks.tasks[0]).toMatchObject({
+      id: 'task-1',
+      priority: 'medium',
+      tags: [],
+      estimatedSessions: 0,
+    })
   })
 
   it('fills in defaults for missing settings fields', () => {

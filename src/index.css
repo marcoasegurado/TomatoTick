@@ -38,6 +38,9 @@
   --button-hover-shade: #000000;
   --danger: #b42318;
   --danger-soft: #ffe3e3;
+  --priority-high: #b42318;
+  --priority-medium: #9a6700;
+  --priority-low: #1c6ea8;
   --chart-grid: rgba(107, 84, 84, 0.22);
   --chart-cursor: rgba(107, 84, 84, 0.08);
   --backdrop-bg: rgba(58, 24, 20, 0.62);
@@ -117,6 +120,9 @@
     --button-hover-shade: #ffffff;
     --danger: #ff8787;
   --danger-soft: #4a2323;
+  --priority-high: #ff8787;
+  --priority-medium: #f0c05a;
+  --priority-low: #91caff;
   --chart-grid: rgba(205, 184, 184, 0.22);
   --chart-cursor: rgba(205, 184, 184, 0.08);
   --backdrop-bg: rgba(18, 7, 6, 0.76);
@@ -158,6 +164,9 @@
   --button-hover-shade: #ffffff;
     --danger: #ff8787;
     --danger-soft: #4a2323;
+    --priority-high: #ff8787;
+    --priority-medium: #f0c05a;
+    --priority-low: #91caff;
     --chart-grid: rgba(205, 184, 184, 0.22);
     --chart-cursor: rgba(205, 184, 184, 0.08);
     --backdrop-bg: rgba(18, 7, 6, 0.76);
@@ -756,6 +765,267 @@ button {
 .task-item__action:disabled {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+.task-item--editing {
+  padding: 0;
+  background-color: transparent;
+}
+
+.task-item__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.task-priority,
+.task-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.5;
+  border-radius: 999px;
+}
+
+.task-priority--high {
+  color: var(--priority-high);
+  background-color: color-mix(in srgb, var(--priority-high) 15%, transparent);
+}
+
+.task-priority--medium {
+  color: var(--priority-medium);
+  background-color: color-mix(
+    in srgb,
+    var(--priority-medium) 18%,
+    transparent
+  );
+}
+
+.task-priority--low {
+  color: var(--priority-low);
+  background-color: color-mix(in srgb, var(--priority-low) 15%, transparent);
+}
+
+.task-tag {
+  color: var(--text-muted);
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.task-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-top: 2px;
+}
+
+.task-progress__bar {
+  height: 6px;
+  overflow: hidden;
+  background-color: var(--surface);
+  border-radius: 999px;
+}
+
+.task-progress__fill {
+  display: block;
+  height: 100%;
+  background-color: var(--mode-color);
+  border-radius: 999px;
+  transition: width var(--transition);
+}
+
+.task-progress__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.task-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.task-filters {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background-color: var(--surface-muted);
+  border-radius: 999px;
+}
+
+.task-filters__button {
+  flex: 1;
+  min-height: 34px;
+  padding: 6px 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  transition:
+    background-color var(--transition),
+    color var(--transition),
+    box-shadow var(--transition);
+}
+
+.task-filters__button:hover {
+  color: var(--text);
+}
+
+.task-filters__button--active {
+  color: var(--on-accent);
+  background-color: var(--mode-color-dark);
+  box-shadow: var(--shadow-sm);
+}
+
+.task-toolbar__selects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.task-select {
+  display: inline-flex;
+  flex: 1;
+  gap: 6px;
+  align-items: center;
+  min-width: 118px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.task-select__label {
+  flex-shrink: 0;
+}
+
+.task-select__input {
+  flex: 1;
+  min-width: 0;
+  min-height: 38px;
+  padding: 6px 8px;
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--text);
+  cursor: pointer;
+  background-color: var(--surface-muted);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  transition:
+    border-color var(--transition),
+    background-color var(--transition);
+}
+
+.task-select__input:hover {
+  border-color: var(--border);
+}
+
+.task-select__input:focus {
+  background-color: var(--surface);
+  border-color: var(--mode-color);
+}
+
+.task-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 14px;
+  background-color: var(--surface);
+  border: 1.5px solid var(--mode-color);
+  border-radius: var(--radius-md);
+}
+
+.task-editor__row {
+  display: flex;
+  gap: 8px;
+}
+
+.task-editor__field {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.task-editor__label {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.task-editor__input,
+.task-editor__select {
+  width: 100%;
+  min-height: 38px;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--text);
+  background-color: var(--surface-muted);
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  transition:
+    border-color var(--transition),
+    background-color var(--transition);
+}
+
+.task-editor__input:focus,
+.task-editor__select:focus {
+  background-color: var(--surface);
+  border-color: var(--mode-color);
+}
+
+.task-editor__input[aria-invalid='true'] {
+  border-color: var(--danger);
+}
+
+.task-editor__hint {
+  font-size: 0.7rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+.task-editor__error {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--danger);
+}
+
+.task-editor__actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.sidebar__empty-state {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.task-pinned {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.task-pinned__title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
 .current-task {
@@ -1625,6 +1895,10 @@ kbd {
   .app__body {
     padding-right: 16px;
     padding-left: 16px;
+  }
+
+  .task-editor__row {
+    flex-direction: column;
   }
 
   .header__title {

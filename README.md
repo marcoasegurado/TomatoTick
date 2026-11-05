@@ -29,8 +29,13 @@ backend.
   and resumes after a refresh or closed tab.
 - **Live timer in the tab title** so you can see the remaining time from any
   browser tab.
-- **Task list** for adding, completing, deleting, and selecting the task you
-  are currently working on.
+- **Richer task management** for adding, editing, completing, deleting, and
+  selecting the task you are currently working on.
+  - Priorities (low, medium, high) with visible badges and priority sorting
+  - Optional tags with tag filtering
+  - Optional Pomodoro estimates with completed-versus-estimated progress
+  - Filters for all, active, and completed tasks
+  - Inline editing with validation, cancel support, and a pinned current focus
 - **Session history and statistics**, including:
   - Sessions and focus time today and all-time
   - Last-seven-days focus chart
@@ -112,11 +117,15 @@ npm run preview
 
 1. Start the default 25-minute focus session with the play button.
 2. Open **Tasks** to add a task and mark it as the current focus.
-3. Use **Settings** to adjust timer durations, break intervals, alerts, and
+3. Use the pencil button to edit a task's title, priority, tags, and optional
+   session estimate. Use the filter buttons and tag selector to focus on the
+   tasks you want to see; the selected focus task stays pinned when a filter
+   hides it.
+4. Use **Settings** to adjust timer durations, break intervals, alerts, and
    auto-start behavior.
-4. When a focus session completes, TomatoTick records it in your history and
+5. When a focus session completes, TomatoTick records it in your history and
    credits the selected task.
-5. Open **Stats** to review your focus time, streaks, activity, and task
+6. Open **Stats** to review your focus time, streaks, activity, and task
    breakdown.
 
 The timer supports the standard Pomodoro cycle: after the configured number of
@@ -194,10 +203,11 @@ Run all tests with:
 npm test
 ```
 
-The suite covers timer behavior, settings validation, task operations, session
-statistics, time formatting, backup validation, PWA helper behavior, dialog
-focus management, and the main application flow. GitHub Actions runs the tests
-and a production build on every push and pull request.
+The suite covers timer behavior, settings validation, task editing,
+priorities, tags, estimates, filtering, sorting, backups and migration, session
+statistics, time formatting, PWA helper behavior, dialog focus management, and
+the main application flow. GitHub Actions runs the tests and a production build
+on every push and pull request.
 
 ## Deploying to Cloudflare Pages
 
@@ -226,8 +236,6 @@ The roadmap for TomatoTick includes:
 
 - **More notification options**, including additional sounds and improved
   background reminders.
-- **Richer task management**, such as task editing, tags, priorities, and
-  optional task estimates.
 - **Expanded analytics**, including custom date ranges, exportable reports, and
   additional productivity trends.
 - **Additional color themes** beyond the current light and dark modes.

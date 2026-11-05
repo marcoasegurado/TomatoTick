@@ -16,14 +16,17 @@ import {
   parseTaskState,
   setActiveTask as setActiveTaskInState,
   toggleTask as toggleTaskInState,
+  updateTask as updateTaskInState,
   type Task,
   type TaskState,
+  type TaskUpdate,
 } from '../utils/tasks'
 import { createId } from '../utils/id'
 
 interface TasksContextValue extends TaskState {
   activeTask: Task | null
   addTask: (title: string) => void
+  updateTask: (id: string, update: TaskUpdate) => void
   toggleTask: (id: string) => void
   deleteTask: (id: string) => void
   setActiveTask: (id: string | null) => void
@@ -58,6 +61,10 @@ export function TasksProvider({ children }: { children: ReactNode }) {
     )
   }, [])
 
+  const updateTask = useCallback((id: string, update: TaskUpdate) => {
+    setState((current) => updateTaskInState(current, id, update))
+  }, [])
+
   const toggleTask = useCallback((id: string) => {
     setState((current) => toggleTaskInState(current, id))
   }, [])
@@ -89,6 +96,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       ...state,
       activeTask,
       addTask,
+      updateTask,
       toggleTask,
       deleteTask,
       setActiveTask,
@@ -99,6 +107,7 @@ export function TasksProvider({ children }: { children: ReactNode }) {
       state,
       activeTask,
       addTask,
+      updateTask,
       toggleTask,
       deleteTask,
       setActiveTask,
