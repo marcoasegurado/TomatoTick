@@ -2,7 +2,7 @@ import type { Durations } from './timer'
 
 export const SETTINGS_STORAGE_KEY = 'tomatotick:settings'
 
-export type AlertSound = 'bell' | 'chime' | 'beep'
+export type AlertSound = 'bell' | 'chime' | 'beep' | 'marimba' | 'digital'
 
 export const SOUND_OPTIONS: ReadonlyArray<{
   id: AlertSound
@@ -11,6 +11,8 @@ export const SOUND_OPTIONS: ReadonlyArray<{
   { id: 'bell', label: 'Bell' },
   { id: 'chime', label: 'Chime' },
   { id: 'beep', label: 'Beep' },
+  { id: 'marimba', label: 'Marimba' },
+  { id: 'digital', label: 'Digital' },
 ]
 
 export interface Settings {
@@ -71,7 +73,13 @@ function isValidVolume(value: unknown): value is number {
 }
 
 export function isAlertSound(value: unknown): value is AlertSound {
-  return value === 'bell' || value === 'chime' || value === 'beep'
+  return (
+    value === 'bell' ||
+    value === 'chime' ||
+    value === 'beep' ||
+    value === 'marimba' ||
+    value === 'digital'
+  )
 }
 
 /** Return a map of human-readable errors. An empty map means the settings are valid. */

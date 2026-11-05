@@ -20,6 +20,7 @@ import {
   playAlertSound,
   getNotificationSupport,
   requestNotificationPermission,
+  showTestNotification,
   type NotificationSupport,
 } from '../utils/alerts'
 import {
@@ -62,6 +63,11 @@ function SettingsModal({ onClose }: SettingsModalProps) {
   const [permission, setPermission] = useState<NotificationSupport>(() =>
     getNotificationSupport(),
   )
+  const [testingNotification, setTestingNotification] = useState(false)
+  const [notificationStatus, setNotificationStatus] = useState<{
+    kind: 'status' | 'error'
+    text: string
+  } | null>(null)
   const [pendingImport, setPendingImport] = useState<{
     backup: Backup
     warnings: string[]
@@ -102,6 +108,7 @@ function SettingsModal({ onClose }: SettingsModalProps) {
 
   const handleNotifications = (enabled: boolean) => {
     setField('notifications', enabled)
+    setNotificationStatus(null)
     if (enabled && permission !== 'granted') {
       void requestNotificationPermission().then((result) => {
         setPermission(result)
@@ -109,6 +116,46 @@ function SettingsModal({ onClose }: SettingsModalProps) {
           setDraft((current) => ({ ...current, notifications: false }))
         }
       })
+    }
+  }
+
+  const handleTestNotification = async () => {
+    setTestingNotification(true)
+    setNotificationStatus(null)
+    try {
+      const result = await requestNotificationPermission()
+      setPermission(result)
+      if (result === 'unsupported') {
+        setNotificationStatus({
+          kind: 'error',
+          text: 'This browser does not support notifications.',
+        })
+        return
+      }
+      if (result === 'denied') {
+        setNotificationStatus({
+          kind: 'error',
+          text: 'Notifications are blocked in your browser settings.',
+        })
+        return
+      }
+
+      const sent = await showTestNotification()
+      setNotificationStatus(
+        sent
+          ? { kind: 'status', text: 'Test notification sent.' }
+          : {
+              kind: 'error',
+              text: 'Could not send the test notification.',
+            },
+      )
+    } catch {
+      setNotificationStatus({
+        kind: 'error',
+        text: 'Could not send the test notification.',
+      })
+    } finally {
+      setTestingNotification(false)
     }
   }
 
@@ -411,6 +458,33 @@ function SettingsModal({ onClose }: SettingsModalProps) {
                 />
                 <span className="settings-toggle__switch" aria-hidden="true" />
               </label>
+
+              <div className="settings-data-actions">
+                <button
+                  type="button"
+                  className="button button--ghost button--small"
+                  disabled={
+                    testingNotification || permission === 'unsupported'
+                  }
+                  onClick={() => void handleTestNotification()}
+                >
+                  {testingNotification
+                    ? 'Sending test notification...'
+                    : 'Send test notification'}
+                </button>
+              </div>
+              {notificationStatus && (
+                <p
+                  className={
+                    notificationStatus.kind === 'error'
+                      ? 'settings-error'
+                      : 'settings-hint'
+                  }
+                  role={notificationStatus.kind === 'error' ? 'alert' : 'status'}
+                >
+                  {notificationStatus.text}
+                </p>
+              )}
             </fieldset>
 
             <fieldset className="settings-group">

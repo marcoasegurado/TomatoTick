@@ -227,6 +227,38 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 ---
 
+## Phase 12: Notification and alert improvements
+
+**Goal:** Make session-end alerts more reliable and give people more sound choices.
+
+- [x] Add two new alert sounds (Marimba and Digital) to the sound picker, validation, and sound engine.
+- [x] Send notifications through the service worker when available, falling back to the browser Notification constructor.
+- [x] Add a notification click handler that focuses an open TomatoTick window or opens the app.
+- [x] Add a Test notification button in Settings with permission and result feedback.
+- [x] Keep a single notification toggle and improve guidance for denied or unsupported browsers.
+- [x] Add tests for sound validation and notification delivery fallbacks.
+- [x] Update the README with the new sounds and notification testing workflow.
+
+**Done when:** Every sound previews correctly, session-end notifications work through the service worker or fallback path, and the test button reports permission state accurately.
+
+---
+
+## Phase 13: Additional themes
+
+**Goal:** Add Sunset, Forest, and Midnight themes alongside light, dark, and system.
+
+- [ ] Expand the theme model to System, Light, Dark, Sunset, Forest, and Midnight.
+- [ ] Migrate existing light/dark preferences and follow OS changes while set to System.
+- [ ] Replace the Dark mode toggle with a theme picker that previews each theme immediately.
+- [ ] Refactor theme tokens so each theme defines its surfaces, text, borders, focus rings, and mode accents.
+- [ ] Check timer modes, task badges, modals, charts, heatmap, drawer, and disabled controls in every theme.
+- [ ] Add tests for theme resolution, persistence, migration, and switching.
+- [ ] Update the README with the available themes.
+
+**Done when:** All themes persist correctly, existing preferences migrate safely, every theme is readable and consistent, and the full test suite and production build pass.
+
+---
+
 ## Out of scope (for now)
 
 - Backend, accounts, or cloud sync

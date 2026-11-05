@@ -131,6 +131,72 @@ describe('App shell', () => {
     expect(localStorage.getItem(TIMER_STORAGE_KEY)).not.toBeNull()
   })
 
+  it('sends a test notification from settings', async () => {
+    const originalNotification = Object.getOwnPropertyDescriptor(
+      window,
+      'Notification',
+    )
+    const originalServiceWorker = Object.getOwnPropertyDescriptor(
+      navigator,
+      'serviceWorker',
+    )
+    const showNotification = vi.fn().mockResolvedValue(undefined)
+
+    class MockNotification {
+      static permission: NotificationPermission = 'granted'
+      static requestPermission = vi.fn().mockResolvedValue('granted')
+
+      constructor() {}
+    }
+
+    Object.defineProperty(window, 'Notification', {
+      configurable: true,
+      value: MockNotification,
+    })
+    Object.defineProperty(navigator, 'serviceWorker', {
+      configurable: true,
+      value: {
+        getRegistration: vi
+          .fn()
+          .mockResolvedValue({ showNotification }),
+      },
+    })
+
+    try {
+      renderApp()
+
+      fireEvent.click(screen.getByRole('button', { name: 'Open settings' }))
+      fireEvent.click(
+        screen.getByRole('button', { name: 'Send test notification' }),
+      )
+
+      expect(
+        await screen.findByText('Test notification sent.'),
+      ).toBeInTheDocument()
+      expect(showNotification).toHaveBeenCalledWith(
+        'TomatoTick notifications are working',
+        expect.objectContaining({
+          body: 'You will see an alert like this when a session ends.',
+        }),
+      )
+    } finally {
+      if (originalNotification) {
+        Object.defineProperty(window, 'Notification', originalNotification)
+      } else {
+        Reflect.deleteProperty(window, 'Notification')
+      }
+      if (originalServiceWorker) {
+        Object.defineProperty(
+          navigator,
+          'serviceWorker',
+          originalServiceWorker,
+        )
+      } else {
+        Reflect.deleteProperty(navigator, 'serviceWorker')
+      }
+    }
+  })
+
   it('adds a task and makes it the current focus', () => {
     renderApp()
 

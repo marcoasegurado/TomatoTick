@@ -1,3 +1,4 @@
+import type { AlertSound } from './settings'
 import type { Mode } from './timer'
 
 let audioContext: AudioContext | null = null
@@ -53,10 +54,7 @@ function playTone(context: AudioContext, tone: ToneOptions) {
  * Play one of the built-in alert sounds using the Web Audio API.
  * Fails silently when audio is unavailable.
  */
-export function playAlertSound(
-  sound: 'bell' | 'chime' | 'beep',
-  volume: number,
-): void {
+export function playAlertSound(sound: AlertSound, volume: number): void {
   const safeVolume = Number.isFinite(volume)
     ? Math.min(1, Math.max(0, volume))
     : 0
@@ -102,6 +100,44 @@ export function playAlertSound(
         duration: 0.65,
         type: 'triangle',
         gain: 0.35,
+        volume: safeVolume,
+      })
+    })
+    return
+  }
+
+  if (sound === 'marimba') {
+    const notes = [523.25, 659.25, 783.99, 1046.5]
+    notes.forEach((frequency, index) => {
+      playTone(context, {
+        frequency,
+        start: index * 0.16,
+        duration: 0.42,
+        type: 'triangle',
+        gain: 0.32,
+        volume: safeVolume,
+      })
+      playTone(context, {
+        frequency: frequency * 2,
+        start: index * 0.16,
+        duration: 0.22,
+        type: 'sine',
+        gain: 0.09,
+        volume: safeVolume,
+      })
+    })
+    return
+  }
+
+  if (sound === 'digital') {
+    const notes = [1046.5, 1318.51, 1046.5]
+    notes.forEach((frequency, index) => {
+      playTone(context, {
+        frequency,
+        start: index * 0.13,
+        duration: 0.09,
+        type: 'square',
+        gain: 0.16,
         volume: safeVolume,
       })
     })
@@ -166,19 +202,63 @@ export async function requestNotificationPermission(): Promise<NotificationSuppo
   }
 }
 
-/** Show a desktop notification if the user has already granted permission. */
-export function showSessionNotification(completedMode: Mode): void {
-  if (typeof window === 'undefined' || !('Notification' in window)) return
-  if (Notification.permission !== 'granted') return
-
-  const message = COMPLETION_MESSAGES[completedMode]
+async function getServiceWorkerRegistration(): Promise<ServiceWorkerRegistration | null> {
+  if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) {
+    return null
+  }
   try {
-    new Notification(message.title, {
-      body: message.body,
-      icon: `${import.meta.env.BASE_URL}favicon.svg`,
-      tag: 'tomatotick-session',
-    })
+    return (await navigator.serviceWorker.getRegistration()) ?? null
+  } catch {
+    return null
+  }
+}
+
+async function showNotification(
+  title: string,
+  body: string,
+): Promise<boolean> {
+  if (typeof window === 'undefined' || !('Notification' in window)) {
+    return false
+  }
+  if (Notification.permission !== 'granted') return false
+
+  const options: NotificationOptions = {
+    body,
+    icon: `${import.meta.env.BASE_URL}favicon.svg`,
+    tag: 'tomatotick-session',
+  }
+
+  const registration = await getServiceWorkerRegistration()
+  if (registration) {
+    try {
+      await registration.showNotification(title, options)
+      return true
+    } catch {
+      // Fall through to the constructor on browsers that reject this.
+    }
+  }
+
+  try {
+    new Notification(title, options)
+    return true
   } catch {
     // Some browsers refuse notifications outside a service worker; ignore.
+    return false
   }
+}
+
+/** Show a session-end notification if the user has granted permission. */
+export async function showSessionNotification(
+  completedMode: Mode,
+): Promise<void> {
+  const message = COMPLETION_MESSAGES[completedMode]
+  await showNotification(message.title, message.body)
+}
+
+/** Send a sample notification so people can verify their browser setup. */
+export async function showTestNotification(): Promise<boolean> {
+  return showNotification(
+    'TomatoTick notifications are working',
+    'You will see an alert like this when a session ends.',
+  )
 }

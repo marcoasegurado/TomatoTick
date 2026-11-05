@@ -58,6 +58,20 @@ describe('validateSettings', () => {
       }),
     ).toHaveProperty('sound')
   })
+
+  it('accepts every built-in alert sound', () => {
+    const sounds: Array<Settings['sound']> = [
+      'bell',
+      'chime',
+      'beep',
+      'marimba',
+      'digital',
+    ]
+
+    for (const sound of sounds) {
+      expect(validateSettings({ ...validSettings, sound })).toEqual({})
+    }
+  })
 })
 
 describe('sanitizeSettings', () => {
@@ -98,6 +112,13 @@ describe('sanitizeSettings', () => {
       autoStart: true,
       notifications: false,
     })
+  })
+
+  it('keeps the expanded alert sounds', () => {
+    expect(
+      sanitizeSettings({ sound: 'marimba' }).sound,
+    ).toBe('marimba')
+    expect(sanitizeSettings({ sound: 'digital' }).sound).toBe('digital')
   })
 })
 

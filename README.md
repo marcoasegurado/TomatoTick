@@ -42,8 +42,11 @@ backend.
   - Current and longest streaks
   - GitHub-style activity heatmap
   - Focus time grouped by task
-- **Audio alerts** with bell, chime, and beep options plus volume control.
-- **Browser notifications** when sessions end, where supported and permitted.
+- **Audio alerts** with bell, chime, beep, marimba, and digital options plus
+  volume control.
+- **Browser notifications** when sessions end, delivered through the service
+  worker when available with a Notification fallback, and a Test notification
+  button in Settings.
 - **Auto-start** for the next session.
 - **Keyboard shortcuts** for starting, resetting, and skipping sessions.
 - **Data backup** with JSON export and import, so local tasks, settings, and
@@ -165,7 +168,9 @@ backend. The following data is stored in the browser's `localStorage`:
 - Completed focus sessions
 
 Clearing the site's browser data resets the app and removes this local history.
-Browser notifications are optional and require permission from the browser.
+Browser notifications are optional and require permission from the browser. Use
+**Settings → Alerts → Send test notification** to verify that notifications
+work in your browser.
 
 Use **Settings → Data** to download a JSON backup or restore one. Backups
 include your settings, tasks, and session history, but not the live timer
@@ -205,9 +210,9 @@ npm test
 
 The suite covers timer behavior, settings validation, task editing,
 priorities, tags, estimates, filtering, sorting, backups and migration, session
-statistics, time formatting, PWA helper behavior, dialog focus management, and
-the main application flow. GitHub Actions runs the tests and a production build
-on every push and pull request.
+statistics, time formatting, PWA helper behavior, notification fallbacks, dialog
+focus management, and the main application flow. GitHub Actions runs the tests
+and a production build on every push and pull request.
 
 ## Deploying to Cloudflare Pages
 
@@ -234,8 +239,6 @@ Cloudflare Pages serves the app from the site root.
 
 The roadmap for TomatoTick includes:
 
-- **More notification options**, including additional sounds and improved
-  background reminders.
 - **Expanded analytics**, including custom date ranges, exportable reports, and
   additional productivity trends.
 - **Additional color themes** beyond the current light and dark modes.
