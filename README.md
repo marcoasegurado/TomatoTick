@@ -61,6 +61,8 @@ backend.
   keyboard-friendly controls.
 - **Six appearance choices**: System, Light, Dark, Sunset, Forest, and Midnight,
   with System following your device appearance.
+- **Flexible analytics** with 7-day, 30-day, monthly, all-time, and custom ranges,
+  plus CSV reports of the sessions you select.
 
 ## Tech stack
 
@@ -132,6 +134,21 @@ npm run preview
    credits the selected task.
 6. Open **Stats** to review your focus time, streaks, activity, and task
    breakdown.
+
+### Stats ranges and reports
+
+The Stats modal opens on the **7 days** range. Use the range buttons to switch
+to **30 days**, **this month**, **all time**, or a **custom** start and end
+date. Your choice is remembered on this device.
+
+The summary cards, focus chart, trends, and per-task breakdown follow the
+chosen range. Ranges longer than 31 days group the chart into 7-day blocks. The
+activity calendar and the streak cards stay all-time, so they are labelled to
+show they ignore the range.
+
+**Export CSV** downloads a report of the sessions in the current range with the
+completion date, time, task, and minutes. The JSON backup in Settings is
+unaffected.
 
 The timer supports the standard Pomodoro cycle: after the configured number of
 focus sessions, it switches to a long break; otherwise, it switches to a short
@@ -212,10 +229,10 @@ npm test
 
 The suite covers timer behavior, settings validation, task editing,
 priorities, tags, estimates, filtering, sorting, backups and migration, session
-statistics, time formatting, PWA helper behavior, notification fallbacks, theme
-resolution and switching, dialog focus management, and the main application
-flow. GitHub Actions runs the tests and a production build on every push and
-pull request.
+statistics, range filtering and comparisons, CSV reports, time formatting, PWA
+helper behavior, notification fallbacks, theme resolution and switching, dialog
+focus management, and the main application flow. GitHub Actions runs the tests
+and a production build on every push and pull request.
 
 ## Deploying to Cloudflare Pages
 
@@ -242,8 +259,6 @@ Cloudflare Pages serves the app from the site root.
 
 The roadmap for TomatoTick includes:
 
-- **Expanded analytics**, including custom date ranges, exportable reports, and
-  additional productivity trends.
 - **Accessibility and mobile refinements** based on continued testing across
   browsers, screen readers, and small screens.
 - **Optional synchronization** for users who want their data available across

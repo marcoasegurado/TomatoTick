@@ -259,6 +259,26 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 ---
 
+## Phase 14: Expanded analytics
+
+**Goal:** Let people review their focus over any time range and take their numbers out of the app.
+
+- [x] Add a range selector to Stats with Last 7 days, Last 30 days, This month, All time, and a custom start/end date pair that validates the selection (start on or before end, no future end date past today).
+- [x] Rebuild the summary cards, focus chart, and focus-by-task breakdown from only the sessions inside the selected range.
+- [x] Keep the activity heatmap as a full calendar view and keep current/longest streaks all-time, labelling both so it is clear they ignore the selected range.
+- [x] Switch chart granularity with the range: daily bars up to 31 days and weekly bars beyond that, with axis labels that name the bucket.
+- [x] Add trend callouts comparing the selected range with the immediately preceding range of equal length, plus average focus per active day and the best day in the range.
+- [x] Add a CSV report export for the selected range (completed date, time, task title, minutes) that downloads with a dated filename and leaves the JSON backup unchanged.
+- [x] Remember the selected range in localStorage, default to Last 7 days, and fall back safely when the stored value is missing or invalid.
+- [x] Add range-aware empty states that name the range and suggest a wider one when it has no sessions.
+- [x] Keep the Stats modal accessible: labelled range controls reachable by keyboard, and a text summary of each chart for assistive technology.
+- [x] Add tests for range boundaries, bucketing, period comparisons, CSV output, and stored-range fallbacks.
+- [x] Update the README with the range controls and the CSV report.
+
+**Done when:** Every Stats panel responds to the selected range (with the heatmap and streaks clearly labelled as calendar and all-time), CSV reports match the numbers on screen, missing or invalid stored ranges fall back to the default, and the full test suite and production build pass.
+
+---
+
 ## Out of scope (for now)
 
 - Backend, accounts, or cloud sync

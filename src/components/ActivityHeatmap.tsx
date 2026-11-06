@@ -19,7 +19,7 @@ function ActivityHeatmap({ sessions, now }: ActivityHeatmapProps) {
       <div
         className="heatmap__body"
         role="img"
-        aria-label="Focus activity for the last 26 weeks"
+        aria-label="Focus activity calendar for the last 26 weeks. This calendar ignores the selected range."
       >
         <div className="heatmap__weekdays" aria-hidden="true">
           {WEEKDAYS.map((label, index) => (

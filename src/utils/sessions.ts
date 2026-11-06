@@ -109,6 +109,14 @@ interface DayBucket {
   minutes: number
 }
 
+/** Human label for the task a session was credited to. */
+export function sessionTaskLabel(session: FocusSession): string {
+  return (
+    session.taskTitle ??
+    (session.taskId === null ? 'Unassigned' : 'Deleted task')
+  )
+}
+
 function groupByDay(
   sessions: readonly FocusSession[],
 ): Map<string, DayBucket> {
@@ -203,9 +211,7 @@ export function getTaskBreakdown(
   for (const session of sessions) {
     const key = session.taskId ?? 'unassigned'
     const existing = buckets.get(key)
-    const title =
-      session.taskTitle ??
-      (session.taskId === null ? 'Unassigned' : 'Deleted task')
+    const title = sessionTaskLabel(session)
 
     if (existing) {
       existing.sessions += 1

@@ -14,6 +14,7 @@ import { TasksProvider } from './context/TasksContext'
 import { createBackup, serializeBackup } from './utils/backup'
 import { DEFAULT_SETTINGS, SETTINGS_STORAGE_KEY } from './utils/settings'
 import { SESSIONS_STORAGE_KEY } from './utils/sessions'
+import { STATS_RANGE_STORAGE_KEY } from './utils/analytics'
 import { TASKS_STORAGE_KEY } from './utils/tasks'
 import { THEME_STORAGE_KEY } from './utils/theme'
 import { TIMER_STORAGE_KEY } from './utils/timer'
@@ -364,7 +365,33 @@ describe('App shell', () => {
     fireEvent.click(screen.getByRole('button', { name: /stats/i }))
     expect(await screen.findByText('No focus sessions yet')).toBeInTheDocument()
     expect(screen.getByRole('dialog')).toBeInTheDocument()
-    expect(screen.getByText('Sessions today')).toBeInTheDocument()
+    expect(screen.getByText('Sessions in range')).toBeInTheDocument()
+  })
+
+  it('switches and remembers the stats range', async () => {
+    renderApp()
+
+    fireEvent.click(screen.getByRole('button', { name: /stats/i }))
+
+    const week = await screen.findByRole('button', { name: '7 days' })
+    expect(week).toHaveAttribute('aria-pressed', 'true')
+
+    fireEvent.click(screen.getByRole('button', { name: '30 days' }))
+    expect(screen.getByRole('button', { name: '30 days' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    expect(week).toHaveAttribute('aria-pressed', 'false')
+
+    await waitFor(() =>
+      expect(localStorage.getItem(STATS_RANGE_STORAGE_KEY)).toBe(
+        '{"preset":"30d"}',
+      ),
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Custom' }))
+    expect(screen.getByLabelText('Start')).toBeInTheDocument()
+    expect(screen.getByLabelText('End')).toBeInTheDocument()
   })
 
   it('moves focus into settings and restores it on Escape', () => {
