@@ -359,6 +359,14 @@ describe('App shell', () => {
     ).toBeInTheDocument()
   })
 
+  it('keeps the timer live region free of countdown updates', () => {
+    renderApp()
+
+    const status = screen.getByRole('status')
+    expect(status).toHaveTextContent('Focus session ready')
+    expect(status.textContent).not.toMatch(/\d{2}:\d{2}/)
+  })
+
   it('opens stats with an empty state when there are no sessions', async () => {
     renderApp()
 

@@ -1,4 +1,6 @@
+import { formatFullDate } from '../utils/analytics'
 import {
+  HEATMAP_WEEKS,
   formatMinutes,
   getHeatmap,
   type FocusSession,
@@ -13,13 +15,19 @@ const WEEKDAYS = ['', 'Mon', '', 'Wed', '', 'Fri', '']
 
 function ActivityHeatmap({ sessions, now }: ActivityHeatmapProps) {
   const weeks = getHeatmap(sessions, now)
+  const activeDays = weeks
+    .flatMap((week) => week.days)
+    .filter((day) => day.minutes > 0)
+  const activeCount = activeDays.length
+  const activeLabel =
+    activeCount === 1 ? '1 active day' : `${activeCount} active days`
 
   return (
     <div className="heatmap">
       <div
         className="heatmap__body"
         role="img"
-        aria-label="Focus activity calendar for the last 26 weeks. This calendar ignores the selected range."
+        aria-label={`Focus activity calendar for the last ${HEATMAP_WEEKS} weeks: ${activeLabel}. This calendar ignores the selected range.`}
       >
         <div className="heatmap__weekdays" aria-hidden="true">
           {WEEKDAYS.map((label, index) => (
@@ -46,6 +54,14 @@ function ActivityHeatmap({ sessions, now }: ActivityHeatmapProps) {
           ))}
         </div>
       </div>
+
+      <ul className="sr-only">
+        {activeDays.map((day) => (
+          <li key={day.dateKey}>
+            {formatFullDate(day.date)}: {formatMinutes(day.minutes)}
+          </li>
+        ))}
+      </ul>
 
       <div className="heatmap__legend" aria-hidden="true">
         <span>Less</span>

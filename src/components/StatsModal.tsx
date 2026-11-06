@@ -270,7 +270,12 @@ function StatsModal({ onClose }: StatsModalProps) {
 
         <div className="stats">
           <div className="stats-toolbar">
-            <div className="range-picker" role="group" aria-label="Stats range">
+            <div
+              className="range-picker"
+              role="group"
+              aria-label="Stats range"
+              aria-describedby="stats-range-summary"
+            >
               {RANGE_PRESETS.map((option) => (
                 <button
                   key={option.id}
@@ -339,6 +344,17 @@ function StatsModal({ onClose }: StatsModalProps) {
               {exportMessage}
             </p>
           )}
+
+          <p
+            id="stats-range-summary"
+            className="sr-only"
+            role="status"
+            aria-live="polite"
+          >
+            {label}: {comparison.current.sessions}{' '}
+            {plural(comparison.current.sessions, 'session', 'sessions')},{' '}
+            {formatMinutes(comparison.current.minutes)}.
+          </p>
 
           <div className="stats-summary">
             <StatCard

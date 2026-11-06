@@ -279,6 +279,25 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 ---
 
+## Phase 15: Accessibility and mobile refinements
+
+**Goal:** Make every view comfortable on small screens and dependable with a screen reader, keyboard, or high-contrast display.
+
+- [x] Replace `100vh` layout and modal heights with `100dvh` fallbacks so mobile browser chrome never clips content.
+- [x] Respect notched-phone safe areas on the header, mobile task drawer, and modal edges.
+- [x] Raise the remaining small controls, including the Stats range buttons and date inputs, to 44px touch targets.
+- [x] Keep form text at 16px on small screens so iOS Safari stops zooming when a field gets focus.
+- [x] Announce Stats range changes with a polite live region tied to the range picker.
+- [x] Expose activity-heatmap days to assistive technology instead of relying on colour alone, and confirm the timer live region stays quiet between sessions.
+- [x] Add forced-colors rules so the progress ring, heatmap, trend bars, and active controls stay legible in Windows High Contrast.
+- [x] Add axe accessibility checks for the timer, tasks drawer, settings, and stats views.
+- [x] Add a manual accessibility and small-screen checklist in `docs/` and link it from the README.
+- [x] Re-run the full test suite and production build.
+
+**Done when:** A 320px-wide screen has no horizontal scroll, every control is at least 44px, inputs stay 16px on mobile, dynamic viewports and safe areas are respected, Stats changes are announced, axe reports no violations on the four main views, and the full test suite and production build pass.
+
+---
+
 ## Out of scope (for now)
 
 - Backend, accounts, or cloud sync

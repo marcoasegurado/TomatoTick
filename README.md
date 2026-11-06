@@ -57,8 +57,8 @@ backend.
   browsers.
 - **Offline support** through a service worker that caches the app shell and
   assets after the first visit.
-- **Responsive interface** with accessible labels, live timer status, and
-  keyboard-friendly controls.
+- **Responsive interface** with accessible labels, live timer status, 44px touch
+  targets, safe-area aware layouts, and keyboard-friendly controls.
 - **Six appearance choices**: System, Light, Dark, Sunset, Forest, and Midnight,
   with System following your device appearance.
 - **Flexible analytics** with 7-day, 30-day, monthly, all-time, and custom ranges,
@@ -219,6 +219,16 @@ The timer and data transformations are kept in `src/utils/` so they can be
 tested independently of the UI. The app uses React context providers to share
 settings, task state, and completed sessions across components.
 
+## Accessibility
+
+TomatoTick is built to work with a keyboard, a screen reader, high-contrast
+display settings, and small screens. Range changes and timer state changes are
+announced, the activity calendar includes a text alternative, and every control
+meets the 44px touch-target guideline on phones.
+
+See [docs/accessibility.md](docs/accessibility.md) for the automated coverage and
+the manual checks to run before shipping UI changes.
+
 ## Testing
 
 Run all tests with:
@@ -231,8 +241,9 @@ The suite covers timer behavior, settings validation, task editing,
 priorities, tags, estimates, filtering, sorting, backups and migration, session
 statistics, range filtering and comparisons, CSV reports, time formatting, PWA
 helper behavior, notification fallbacks, theme resolution and switching, dialog
-focus management, and the main application flow. GitHub Actions runs the tests
-and a production build on every push and pull request.
+focus management, the activity calendar's text alternative, axe accessibility
+checks for the main views, and the main application flow. GitHub Actions runs
+the tests and a production build on every push and pull request.
 
 ## Deploying to Cloudflare Pages
 
@@ -259,8 +270,6 @@ Cloudflare Pages serves the app from the site root.
 
 The roadmap for TomatoTick includes:
 
-- **Accessibility and mobile refinements** based on continued testing across
-  browsers, screen readers, and small screens.
 - **Optional synchronization** for users who want their data available across
   multiple devices.
 
