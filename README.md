@@ -5,7 +5,7 @@
 [![CI](https://github.com/marcoasegurado/TomatoTick/actions/workflows/ci.yml/badge.svg)](https://github.com/marcoasegurado/TomatoTick/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**[Try TomatoTick live →](https://tomatotick.marcoeduardo-asegurado.workers.dev/)**
+**[Try TomatoTick live →](https://tomato-tick.vercel.app/)**
 
 TomatoTick is a browser-based Pomodoro timer that combines configurable focus
 and break sessions with task tracking, session history, and lightweight
@@ -72,7 +72,7 @@ backend.
 - Web App Manifest and service worker for PWA/offline support
 - Vitest and Testing Library
 - GitHub Actions for CI
-- Cloudflare for hosting
+- Vercel for hosting
 
 ## Getting started
 

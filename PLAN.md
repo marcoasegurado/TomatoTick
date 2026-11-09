@@ -21,7 +21,7 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 - React + Vite
 - localStorage for all persistence (no backend)
 - Vitest for unit tests
-- Cloudflare Pages deployment (connected to the GitHub repo, auto-deploys on push to `main`)
+- Vercel deployment (connected to the GitHub repo, auto-deploys on push to `main`)
 - GitHub Actions for CI (tests and build checks)
 - A lightweight chart library (e.g. Recharts) for stats
 
@@ -37,7 +37,7 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 | Look | Playful tomato theme, rounded shapes, color changes per mode (focus, short break, long break). |
 | Layout | Timer is the main view. Task list in a sidebar (drawer on mobile). Stats and settings open as modals. Fully responsive. |
 | Extras | Keyboard shortcuts (e.g. `Space` start/pause, `R` reset, `S` skip). |
-| Repo | Polished README, Cloudflare Pages demo, Vitest tests, CI on every push. |
+| Repo | Polished README, Vercel demo, Vitest tests, CI on every push. |
 
 ---
 
@@ -49,7 +49,7 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 - [x] Set up a folder structure (`components/`, `hooks/`, `utils/`, `context/` or `store/`, `assets/`).
 - [x] Add global styles and CSS variables for the three mode colors (focus, short break, long break).
 - [x] Add Vitest and a sample passing test.
-- [x] Add a `.gitignore`. Keep the Vite `base` option at `/` (the default), since Cloudflare Pages serves the site from the root.
+- [x] Add a `.gitignore`. Keep the Vite `base` option at `/` because Vercel serves the site from the root.
 - [x] Create a basic app shell: header, main timer area, empty sidebar.
 
 **Done when:** `npm run dev`, `npm run build`, and `npm test` all work.
@@ -145,15 +145,15 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 - [x] Review and fill gaps in unit tests (timer, settings, tasks, stats).
 - [x] Add a GitHub Actions workflow that runs install, lint (if configured), tests, and build on every push and pull request.
-- [x] Prepare the project for Cloudflare Pages. Do not add a GitHub Pages workflow. The deployment itself is set up by the owner in the Cloudflare dashboard (Workers & Pages, create a Pages project, connect the GitHub repo) with these build settings:
+- [x] Prepare the project for Vercel. Do not add a GitHub Pages workflow. The deployment itself is set up by the owner in the Vercel dashboard (create a project, connect the GitHub repo) with these build settings:
   - Framework preset: Vite (or build command `npm run build`)
   - Build output directory: `dist`
   - Production branch: `main`
 - [x] Make sure `npm run build` succeeds from a clean install and produces a working `dist/` folder.
-- [x] Add a short "Deploying to Cloudflare Pages" section to the README with the settings above.
+- [x] Add a short "Deploying to Vercel" section to the README with the settings above.
 - [x] After the owner deploys, confirm the live site works (assets load, timer runs, localStorage persists, no console errors).
 
-**Done when:** CI passes on every push, a clean build works, and a push to `main` publishes the live demo on Cloudflare Pages.
+**Done when:** CI passes on every push, a clean build works, and a push to `main` publishes the live demo on Vercel.
 
 ---
 
@@ -169,7 +169,7 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
   - [x] Getting started (install, run, test, build).
   - [x] Keyboard shortcuts table.
   - [x] Project structure overview.
-  - [x] Roadmap (e.g. backend sync, data export/import, PWA).
+  - [x] Roadmap (e.g. optional sync, data export/import, PWA).
 - [x] Add a `LICENSE` file (MIT).
 - [x] Final cleanup: remove unused files and dead code, and make sure there are no console errors.
 
@@ -298,6 +298,110 @@ TomatoTick is a playful, tomato-themed Pomodoro timer with a task list and produ
 
 ---
 
-## Out of scope (for now)
+## Future improvement roadmap
 
-- Backend, accounts, or cloud sync
+The following phases are prioritized for future development. Complete one phase
+at a time, validate it on desktop and mobile, and do not begin the next phase
+until the current phase's checklist passes.
+
+### Phase 16: Production hardening
+
+**Goal:** Make the deployed app dependable across real browsers and releases.
+
+- [ ] Finalize Vercel deployment instructions in `README.md` and
+  `DEPLOYMENT.md`, including the production URL.
+- [ ] Add a browser support matrix covering Chrome, Edge, Firefox, Safari, and
+  installed PWA behavior.
+- [ ] Test production behavior on desktop, Android, and iOS, including audio,
+  notifications, install prompts, offline startup, and service-worker updates.
+- [ ] Add a visible "new version available" refresh flow for stale PWA caches.
+- [ ] Add a lightweight production smoke-test checklist for timer start,
+  reload recovery, task persistence, backup import, and offline navigation.
+- [ ] Confirm Vercel preview deployments do not use production-only assumptions.
+
+**Done when:** Production behavior is documented and verified on the supported
+browsers, and users can update an installed copy without clearing site data.
+
+### Phase 17: Data safety and storage resilience
+
+**Goal:** Reduce the risk of losing local productivity data.
+
+- [ ] Display the last backup date and the number of stored tasks and sessions.
+- [ ] Warn users when they have substantial data but have never exported a backup.
+- [ ] Add an import preview showing records, skipped entries, and replacement scope
+  before confirmation.
+- [ ] Add explicit handling and user feedback for unavailable or full storage.
+- [ ] Design and test a versioned migration path from `localStorage` to IndexedDB.
+- [ ] Keep JSON export/import available as the portable recovery format.
+- [ ] Test recovery from malformed, old, partial, and oversized backup files.
+
+**Done when:** Users understand where their data is stored, can verify a backup
+before importing it, and migration or storage failures are reported clearly.
+
+### Phase 18: Onboarding and focus experience
+
+**Goal:** Help new users understand and reach value quickly.
+
+- [ ] Add a first-run introduction explaining Pomodoro sessions, tasks, and breaks.
+- [ ] Offer an optional sample task without silently creating user data.
+- [ ] Explain local-only storage, backups, notifications, and offline behavior.
+- [ ] Add a distraction-free focus mode that hides nonessential controls.
+- [ ] Add an optional short countdown before a focus session begins.
+- [ ] Improve empty states with clear next actions instead of only descriptive text.
+- [ ] Measure completion of onboarding locally without collecting personal data.
+
+**Done when:** A new user can start a meaningful focus session without reading
+the README, and existing users can skip or revisit the guidance.
+
+### Phase 19: Task planning
+
+**Goal:** Extend tasks from session labels into lightweight daily planning.
+
+- [ ] Add due dates and overdue states with accessible visual and text indicators.
+- [ ] Add projects or task groups without breaking existing task backups.
+- [ ] Add optional notes and subtasks with sensible limits for small screens.
+- [ ] Add task search and a dedicated "Today" view.
+- [ ] Add recurring tasks only after defining clear completion and rollover rules.
+- [ ] Preserve the current focus-task behavior across filtering, sorting, and edits.
+- [ ] Add migration, keyboard, mobile, and backup tests for every new task field.
+
+**Done when:** Users can plan a day's work without needing a separate task list,
+while the existing quick-focus workflow remains fast and uncluttered.
+
+### Phase 20: Actionable analytics and goals
+
+**Goal:** Turn historical statistics into decisions users can act on.
+
+- [ ] Add weekly focus goals with progress and an opt-in reminder.
+- [ ] Add planned-versus-completed Pomodoro reporting.
+- [ ] Add estimate accuracy and abandoned-session metrics.
+- [ ] Add focus patterns by weekday and time of day without exposing raw data.
+- [ ] Add concise insight cards that explain the evidence behind each suggestion.
+- [ ] Keep ranges, CSV exports, heatmaps, and all-time labels consistent.
+- [ ] Test calculations against timezone boundaries, daylight-saving changes, and
+  empty or sparse histories.
+
+**Done when:** Each new metric answers a practical planning question and matches
+the underlying session data exported by the user.
+
+### Phase 21: Optional synchronization
+
+**Goal:** Support multi-device use without removing the privacy-first local mode.
+
+- [ ] Validate demand and choose a backend only after the local experience is stable.
+- [ ] Define account, deletion, export, privacy, and recovery requirements first.
+- [ ] Keep the app fully usable without an account or network connection.
+- [ ] Add explicit sync status, conflict handling, and last-synced timestamps.
+- [ ] Encrypt or minimize sensitive productivity data where appropriate.
+- [ ] Test offline edits, duplicate sessions, conflict resolution, logout, and
+  account deletion before enabling synchronization by default.
+
+**Done when:** Synchronization is optional, understandable, recoverable, and does
+not weaken the current local-only privacy and offline experience.
+
+## Out of scope until Phase 21
+
+- Accounts, backend services, or cloud synchronization before the requirements
+  and privacy model are approved.
+- Team collaboration, shared workspaces, and social productivity features.
+- Notifications that require collecting user data on a remote server.
